@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador · Autoconocimiento y Vocación Docente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#141f33;
+    --navy-900:#1c2b45;
+    --navy-800:#24365a;
+    --navy-700:#324873;
+    --bronze:#b08833;
+    --bronze-dark:#8f6c22;
+    --paper:#f7f4ec;
+    --paper-2:#efe9db;
+    --ink:#24221d;
+    --ink-soft:#5c5648;
+    --line:#dad3c2;
+    --success:#3f7a4e;
+    --success-bg:#e9f2ea;
+    --error:#a6423d;
+    --error-bg:#f7eae9;
+    --radius-card: 3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Source Serif 4',serif; margin:0; color:var(--navy-900); font-weight:600;}
+  p{margin:0 0 .9em 0;}
+  .app{max-width:900px;margin:0 auto; padding-bottom:64px;}
+
+  /* HEADER */
+  .institutional{
+    background:linear-gradient(180deg,var(--navy-950),var(--navy-900));
+    color:#eee7d6;
+    padding:22px 28px 20px;
+    border-bottom:3px solid var(--bronze);
+  }
+  .institutional .crest-row{display:flex; align-items:center; gap:14px;}
+  .crest{
+    width:46px;height:46px;flex:0 0 auto;border-radius:50%;
+    border:1.5px solid var(--bronze);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Source Serif 4',serif;font-weight:700;font-size:15px;color:var(--bronze);
+    background:rgba(176,136,51,0.08);
+  }
+  .institutional .lines{font-size:12.5px; letter-spacing:.2px; color:#cfc7ae;}
+  .institutional .lines strong{color:#f3ecd9; display:block; font-family:'Source Serif 4',serif; font-size:15.5px; font-weight:600; margin-bottom:1px;}
+  .institutional .lines span{display:block;}
+  .institutional .sim-title{margin-top:16px;}
+  .institutional .sim-title h1{color:#f7f3e6; font-size:24px; line-height:1.25;}
+  .institutional .sim-title .unidad{color:var(--bronze); font-size:13px; font-weight:600; margin-bottom:5px; font-family:'Inter',sans-serif;}
+
+  /* STEPPER */
+  .stepper{
+    display:flex; background:var(--paper-2); border-bottom:1px solid var(--line);
+    overflow-x:auto;
+  }
+  .step-btn{
+    flex:1 1 0; min-width:92px; text-align:left; background:none; border:none; cursor:pointer;
+    padding:10px 10px 9px; font-family:'Inter',sans-serif; color:var(--ink-soft);
+    border-bottom:3px solid transparent; font-size:11.5px; transition:border-color .15s, color .15s;
+  }
+  .step-btn .num{display:block; font-size:10px; color:var(--bronze-dark); font-weight:700; margin-bottom:2px;}
+  .step-btn.active{color:var(--navy-900); border-bottom-color:var(--bronze); font-weight:600;}
+  .step-btn.done{color:var(--navy-800);}
+  .step-btn:disabled{opacity:.42; cursor:not-allowed;}
+
+  /* CONTENT */
+  .panel{padding:30px 28px 10px;}
+  .panel .eyebrow{font-size:12.5px; color:var(--bronze-dark); font-weight:600; margin-bottom:6px;}
+  .panel h2{font-size:22px; margin-bottom:14px;}
+  .lead{font-size:15.5px; color:var(--ink-soft); max-width:64ch;}
+
+  .card{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-card);
+    padding:18px 20px; margin-bottom:14px;
+  }
+  .card h3{font-size:16.5px; margin-bottom:6px;}
+  .card .tag{
+    display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.3px;
+    color:var(--bronze-dark); border:1px solid var(--bronze); border-radius:2px;
+    padding:1px 7px; margin-bottom:10px;
+  }
+  .card p{font-size:14.5px; color:var(--ink);}
+  .card p.small{font-size:13px; color:var(--ink-soft);}
+
+  /* glossary */
+  abbr.gloss{
+    border-bottom:1px dotted var(--bronze-dark); text-decoration:none; color:inherit; cursor:help;
+  }
+
+  /* audio buttons */
+  .audio-btn{
+    font-family:'Inter'; font-size:12px; font-weight:600; border:1px solid var(--bronze);
+    color:var(--bronze-dark); background:#fff; border-radius:14px; padding:4px 12px;
+    cursor:pointer; display:inline-block; margin:2px 0 10px;
+  }
+  .audio-btn:hover{background:var(--paper-2);}
+  .analogy-card .audio-btn{background:transparent; border-color:var(--bronze); color:var(--bronze); margin:0;}
+
+  /* theory */
+  details.theory{
+    background:#fff; border:1px solid var(--line); border-left:3px solid var(--navy-800);
+    margin-bottom:9px; border-radius:2px;
+  }
+  details.theory summary{
+    padding:12px 16px; cursor:pointer; font-family:'Source Serif 4',serif; font-weight:600;
+    font-size:15.5px; color:var(--navy-900); list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  details.theory summary::-webkit-details-marker{display:none;}
+  details.theory summary::after{content:"+"; font-family:'Inter'; font-size:19px; color:var(--bronze-dark); font-weight:400; flex:0 0 auto;}
+  details.theory[open] summary::after{content:"–";}
+  details.theory .theory-body{padding:0 16px 16px; font-size:14.3px; color:var(--ink);}
+  details.theory .theory-body .authors{font-size:12.5px; color:var(--ink-soft); margin-top:8px; font-style:italic;}
+
+  /* view toggle */
+  .view-toggle{display:flex; gap:8px; margin-bottom:16px;}
+  .vt-btn{
+    font-family:'Inter'; font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:14px;
+    border:1px solid var(--line); background:#fff; color:var(--ink-soft); cursor:pointer;
+  }
+  .vt-btn.active{border-color:var(--navy-900); background:var(--navy-900); color:#f4eedd;}
+
+  /* timeline */
+  .timeline{position:relative; padding-left:22px; border-left:2px solid var(--line); margin-top:8px;}
+  .tl-item{position:relative; margin-bottom:24px;}
+  .tl-dot{position:absolute; left:-29px; top:5px; width:10px; height:10px; border-radius:50%; background:var(--bronze); box-shadow:0 0 0 3px var(--paper);}
+  .tl-year{font-family:'Source Serif 4',serif; font-weight:700; color:var(--bronze-dark); font-size:13px; margin-bottom:3px;}
+  .tl-item h3{font-size:15.5px; margin-bottom:4px;}
+  .tl-item .authors{font-size:12px; color:var(--ink-soft); font-style:italic;}
+
+  /* analogies */
+  .analogy-card{
+    background:var(--navy-900); color:#efe9d9; border-radius:var(--radius-card);
+    padding:20px 22px; margin-bottom:14px; position:relative; overflow:hidden;
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .analogy-card::before{content:""; position:absolute; top:0; right:0; width:5px; height:100%; background:var(--bronze);}
+  .analogy-icon{width:54px; height:54px; flex:0 0 auto; margin-top:2px;}
+  .ic-shape{fill:none; stroke:var(--bronze); stroke-width:2;}
+  .ic-shape-dim{fill:none; stroke:var(--bronze); stroke-width:2; stroke-dasharray:3 3; opacity:.55;}
+  .ic-line{stroke:#efe9d9; stroke-width:2; fill:none; opacity:.8;}
+  .analogy-text{flex:1; min-width:0;}
+  .analogy-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .analogy-card h3{color:#f4eddb; font-size:16.5px; margin-bottom:0;}
+  .analogy-card .concept{font-size:11.5px; color:var(--bronze); font-weight:600; letter-spacing:.3px; margin-bottom:9px;}
+  .analogy-card p{color:#d8d1bd; font-size:14.3px; margin-bottom:0; margin-top:8px;}
+
+  /* scenario */
+  .scenario-box{
+    background:var(--paper-2); border-left:3px solid var(--bronze); padding:16px 18px;
+    margin-bottom:18px; border-radius:2px;
+  }
+  .scenario-box .who{font-family:'Source Serif 4',serif; font-weight:600; color:var(--navy-900); font-size:15.5px; margin-bottom:5px;}
+  .scenario-box p{font-size:14.5px; margin-bottom:0; color:var(--ink);}
+
+  /* open response */
+  .open-response{background:var(--paper-2); border:1px dashed var(--bronze); border-radius:2px; padding:12px 14px; margin-bottom:10px;}
+  .or-label{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:7px;}
+  .or-input{
+    width:100%; font-family:'Inter'; font-size:13.5px; padding:9px 11px; border:1px solid var(--line);
+    border-radius:2px; resize:vertical; margin-bottom:9px; background:#fff; color:var(--ink);
+  }
+  .or-recall{background:var(--paper-2); border-left:2px solid var(--navy-700); padding:9px 12px; font-size:13px; color:var(--ink-soft); margin-bottom:12px; border-radius:2px;}
+  .or-tag{display:block; font-size:10.5px; font-weight:700; color:var(--navy-700); margin-bottom:2px; letter-spacing:.2px;}
+
+  .question-block{margin-bottom:22px;}
+  .question-block .qtext{font-size:15px; font-weight:600; color:var(--navy-900); margin-bottom:10px; font-family:'Source Serif 4',serif;}
+  .option{
+    display:flex; gap:10px; align-items:flex-start; padding:11px 14px; border:1px solid var(--line);
+    border-radius:2px; margin-bottom:7px; cursor:pointer; background:#fff; transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--navy-700);}
+  .option input{margin-top:3px; flex:0 0 auto;}
+  .option .otext{font-size:14px; color:var(--ink);}
+  .option.correct{border-color:var(--success); background:var(--success-bg);}
+  .option.incorrect{border-color:var(--error); background:var(--error-bg);}
+  .option.locked{cursor:default;}
+
+  .feedback-box{margin-top:8px; padding:12px 15px; border-radius:2px; font-size:13.8px; display:none;}
+  .feedback-box.show{display:block;}
+  .feedback-box.correct{background:var(--success-bg); border:1px solid var(--success); color:#274f31;}
+  .feedback-box.incorrect{background:var(--error-bg); border:1px solid var(--error); color:#6e2e2a;}
+  .feedback-box .verdict{font-weight:700; display:block; margin-bottom:3px; font-family:'Source Serif 4',serif; font-size:14.5px;}
+
+  .btn-row{display:flex; gap:10px; margin-top:22px; padding-top:16px; border-top:1px solid var(--line); justify-content:space-between; flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter'; font-size:13.5px; font-weight:600; padding:10px 20px; border-radius:2px;
+    border:1px solid var(--navy-900); background:var(--navy-900); color:#f4eedd; cursor:pointer;
+    transition:background .15s;
+  }
+  .btn:hover{background:var(--navy-700);}
+  .btn.ghost{background:none; color:var(--navy-900); border:1px solid var(--line);}
+  .btn.ghost:hover{border-color:var(--navy-900);}
+  .btn.small{padding:6px 14px; font-size:12.5px;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* route choice */
+  .route-row{display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;}
+
+  /* breathing pause */
+  .breathing-wrap{display:flex; flex-direction:column; align-items:center; padding:26px 10px; margin-bottom:10px;}
+  .breathing-circle{
+    width:110px; height:110px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #cfa24d, var(--bronze-dark));
+    animation:breathe 14s ease-in-out infinite;
+    box-shadow:0 0 0 1px var(--bronze);
+  }
+  @keyframes breathe{
+    0%{transform:scale(.62);}
+    28%{transform:scale(1);}
+    57%{transform:scale(1);}
+    100%{transform:scale(.62);}
+  }
+  .breathing-hint{margin-top:16px; font-size:13px; color:var(--ink-soft); text-align:center;}
+
+  /* ficha */
+  .field-label{display:block; font-size:13px; font-weight:600; color:var(--navy-800); margin:12px 0 6px;}
+  .field-input{
+    width:100%; font-family:'Inter'; font-size:13.8px; padding:9px 11px; border:1px solid var(--line);
+    border-radius:2px; background:#fff; color:var(--ink); resize:vertical;
+  }
+  .field-input.line{margin-bottom:8px;}
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+  .chip{
+    display:flex; align-items:center; gap:6px; font-size:13px; border:1px solid var(--line);
+    border-radius:14px; padding:6px 12px; cursor:pointer; background:#fff; color:var(--ink-soft);
+  }
+  .chip.checked{border-color:var(--bronze); color:var(--bronze-dark); background:var(--paper-2);}
+  .chip.block{display:flex; width:100%; border-radius:2px; margin-bottom:7px;}
+  .chip input{margin:0;}
+  .slider-row{display:flex; align-items:center; gap:12px; margin-top:6px;}
+  .slider-row input[type=range]{flex:1;}
+  .slider-val{font-size:13px; font-weight:600; color:var(--navy-800); min-width:34px;}
+  .record-row{display:flex; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap;}
+  .record-row audio{max-width:100%;}
+
+  .score-tag{
+    display:inline-block; font-size:12.5px; font-weight:600; color:var(--navy-800);
+    background:var(--paper-2); border:1px solid var(--line); border-radius:2px; padding:3px 10px; margin-bottom:14px;
+  }
+
+  .final-summary{background:#fff; border:1px solid var(--line); border-radius:2px; padding:22px 24px; margin-bottom:16px;}
+  .final-summary .level{font-family:'Source Serif 4',serif; font-size:19px; color:var(--navy-900); margin-bottom:6px;}
+  .final-summary .bar-track{height:8px; background:var(--paper-2); border-radius:4px; overflow:hidden; margin:10px 0 16px;}
+  .final-summary .bar-fill{height:100%; background:var(--bronze);}
+
+  .result-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;}
+  .result-tile{border:1px solid var(--line); border-radius:2px; padding:14px 16px; background:#fff;}
+  .result-tile .n{font-family:'Source Serif 4',serif; font-size:26px; color:var(--navy-900);}
+  .result-tile .lbl{font-size:12px; color:var(--ink-soft);}
+  .result-tile.ok .n{color:var(--success);}
+  .result-tile.bad .n{color:var(--error);}
+
+  .test-item-status{
+    display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid var(--line);
+    border-radius:2px; margin-bottom:6px; font-size:13.5px; background:#fff;
+  }
+  .test-item-status .dot{width:9px;height:9px;border-radius:50%; flex:0 0 auto;}
+  .test-item-status .dot.ok{background:var(--success);}
+  .test-item-status .dot.bad{background:var(--error);}
+
+  footer.note{padding:20px 28px 34px; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--line); margin-top:8px;}
+
+  @media (max-width:600px){
+    .panel{padding:22px 16px 6px;}
+    .institutional{padding:18px 16px;}
+    .result-grid{grid-template-columns:1fr;}
+    .step-btn{min-width:78px; font-size:10.5px;}
+    .analogy-card{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* ============================= GLOSARIO ============================= */
+
+const GLOSSARY = {
+  "autoconocimiento": "Reconocer la propia historia, emociones, valores y creencias en juego al enseñar.",
+  "vocación": "Disposición hacia la docencia que se construye y se cultiva con el tiempo.",
+  "autoconciencia": "Notar una emoción propia en el momento en que aparece.",
+  "autorregulación": "Gestionar de forma consciente una emoción ya notada, sin dejarse gobernar por ella.",
+  "tacto pedagógico": "Sensibilidad para actuar en el momento oportuno frente al estudiantado; se desarrolla con la práctica.",
+  "zona ciega": "Rasgo propio visible para otras personas pero invisible para uno mismo.",
+  "ventana de johari": "Modelo con cuatro áreas del yo: lo abierto, lo oculto, lo ciego y lo desconocido.",
+  "reflexión en la acción": "Pensar sobre lo que se hace mientras se está haciendo.",
+  "reflexión sobre la acción": "Pensar sobre lo ocurrido después de que pasó.",
+  "aprendizaje transformador": "Examinar de manera crítica los supuestos que normalmente se dan por sentados.",
+  "fit-choice": "Escala que agrupa los motivos que llevan a elegir la docencia.",
+  "identidad profesional": "Respuesta siempre abierta a la pregunta de quién es uno como docente."
+};
+
+function applyGlossary(text){
+  let out = text;
+  const terms = Object.keys(GLOSSARY).sort((a,b)=>b.length-a.length);
+  terms.forEach(term=>{
+    const escaped = term.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');
+    const re = new RegExp('\\b('+escaped+')\\b', 'i');
+    out = out.replace(re, function(match){
+      const def = GLOSSARY[term].replace(/"/g,'&quot;');
+      return '<abbr class="gloss" title="'+def+'">'+match+'</abbr>';
+    });
+  });
+  return out;
+}
+
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ============================= CONTENIDO TEÓRICO ============================= */
+
+const THEORY = [
+  {
+    tag:"Núcleo de la identidad",
+    title:"El autoconocimiento como base de la práctica docente",
+    body:`El autoconocimiento es la capacidad de reconocer la propia historia, motivaciones,
+    emociones, valores y creencias que se ponen en juego al enseñar. Korthagen, con su modelo de
+    niveles de cambio, ubica la identidad y la misión personal en el centro de la actuación docente:
+    debajo de las competencias y las conductas observables está el "quién soy y para qué enseño",
+    que es lo que sostiene y da coherencia a todo lo demás. Por eso formarse como docente no puede
+    reducirse a aprender técnicas: exige también un trabajo consciente sobre uno mismo.`,
+    authors:"Korthagen (2004)"
+  },
+  {
+    tag:"Vocación",
+    title:"La vocación como disposición que se construye",
+    body:`La vocación docente no es un llamado fijo o romántico anterior a toda experiencia; es una
+    disposición que se construye y reconstruye a lo largo de la trayectoria personal y profesional.
+    Enseñar es una opción ética y política, no solo técnica, que implica un compromiso sostenido con
+    el otro. La pasión y el compromiso emocional que sostienen la calidad de la enseñanza deben
+    cultivarse de manera deliberada; no se poseen de una vez y para siempre.`,
+    authors:"Freire (1997); Day (2004)"
+  },
+  {
+    tag:"Raíces biográficas",
+    title:"La biografía escolar como precomprensión",
+    body:`La identidad docente se construye narrativamente: mucho antes de comenzar la formación
+    profesional, toda persona ya ha internalizado modelos implícitos de lo que significa enseñar,
+    a partir de sus propios años como estudiante. Estos modelos —positivos y negativos— influyen en
+    las expectativas, temores y certezas con que se llega al Prácticum, muchas veces sin que la
+    persona los haya hecho conscientes. El tacto pedagógico, esa sensibilidad para actuar
+    oportunamente frente al estudiantado, tampoco es innato: se desarrolla progresivamente
+    reflexionando sobre la propia experiencia.`,
+    authors:"Bolívar (2006); Van Manen (1998)"
+  },
+  {
+    tag:"Dimensión emocional",
+    title:"La enseñanza como trabajo emocional",
+    body:`La autoconciencia —reconocer las propias emociones en el momento en que ocurren— es la
+    competencia base de la inteligencia emocional, sobre la cual se construyen la autorregulación y
+    la empatía. La enseñanza es un trabajo profundamente emocional: el sentido de identidad del
+    profesorado está ligado a lo que siente en el aula. La satisfacción, la frustración, el
+    entusiasmo o el agotamiento no son ruido externo a la profesión, sino parte de cómo cada persona
+    se experimenta a sí misma como docente.`,
+    authors:"Goleman (1995); Nias (1996)"
+  },
+  {
+    tag:"Dimensión emocional",
+    title:"Autorregulación: el paso que sigue a la autoconciencia",
+    body:`Reconocer una emoción no es lo mismo que saber qué hacer con ella. La autorregulación es
+    la competencia que se construye sobre la autoconciencia: mientras la autoconciencia permite
+    identificar que se siente nerviosismo, frustración o agotamiento, la autorregulación es la
+    capacidad de gestionar esa emoción de forma consciente, sin negarla ni dejarse gobernar por
+    ella. En la práctica docente, esto se traduce en la diferencia entre reaccionar de forma
+    impulsiva ante una emoción intensa —por ejemplo, endurecerse frente a un comentario que
+    incomoda— y responder con una decisión consciente después de haber reconocido lo que se siente.
+    Por eso la autorregulación no puede trabajarse antes que la autoconciencia: no es posible
+    regular una emoción que todavía no se ha identificado.`,
+    authors:"Goleman (1995)"
+  },
+  {
+    tag:"Dimensión cognitivo-valorativa",
+    title:"Las creencias implícitas sobre enseñar y aprender",
+    body:`Antes de examinarlas explícitamente, cada estudiante trae consigo creencias implícitas
+    sobre qué es enseñar, cómo se aprende y cuál es el papel del docente. El autoconocimiento es la
+    condición previa para poder identificarlas: no es posible cuestionar una creencia que permanece
+    invisible para quien la sostiene. Esta dimensión se profundiza más adelante, en la Unidad 2.`,
+    authors:"Se retoma en la Unidad 2"
+  },
+  {
+    tag:"Dimensión social y relacional",
+    title:"La ventana de Johari: lo que otros ven y yo no",
+    body:`El autoconocimiento no es un ejercicio puramente introspectivo. Toda persona tiene
+    aspectos de sí misma que le son evidentes, pero también zonas ciegas que solo se hacen visibles
+    a través de la retroalimentación de otros. Aplicado a la formación docente, esto significa que
+    el diálogo con pares, con el profesor de Prácticum y con los actores de los centros educativos
+    no es un complemento del autoconocimiento: es una de sus vías de acceso más importantes.`,
+    authors:"Luft e Ingham (1955), modelo de la ventana de Johari"
+  },
+  {
+    tag:"Herramientas",
+    title:"Reflexión, aprendizaje transformador y portafolio",
+    body:`Existe la reflexión en la acción, que ocurre en el momento mismo de actuar, y la reflexión
+    sobre la acción, que se realiza después, al revisar lo ocurrido; ambas convierten la experiencia
+    en aprendizaje sobre uno mismo como futuro docente. El aprendizaje transformador exige someter a
+    examen crítico los supuestos y marcos de referencia que se dan por sentados, muchos adquiridos
+    de forma acrítica durante la propia trayectoria escolar. La escritura narrativa y el registro
+    sistemático en el portafolio no son solo evidencia de lo realizado: son el instrumento que hace
+    visible —y por tanto revisable— lo que de otro modo permanecería implícito.`,
+    authors:"Schön (1983); Mezirow (1991)"
+  },
+  {
+    tag:"Proceso continuo",
+    title:"Una pregunta que no se cierra en una unidad",
+    body:`La identidad profesional del profesorado no es un estado que se alcanza de una vez, sino
+    un proceso continuo de respuesta a la pregunta "¿quién soy como docente?", que se reformula a lo
+    largo de toda la trayectoria. El Prácticum I no pretende cerrar esta pregunta, sino ofrecer las
+    primeras herramientas para sostenerla de manera consciente y sistemática.`,
+    authors:"Beijaard, Meijer y Verloop (2004)"
+  },
+  {
+    tag:"Motivación docente",
+    title:"Una combinación de motivos, no un llamado puro",
+    body:`La decisión de dedicarse a la enseñanza responde casi siempre a una combinación de
+    motivos: el deseo de trabajar con la niñez o la juventud, la valoración social de la utilidad de
+    enseñar, las propias experiencias como estudiante, pero también la estabilidad laboral, la
+    compatibilidad con la vida familiar o incluso la falta de otras opciones percibidas. Reconocer
+    esta pluralidad no desvaloriza la vocación: permite examinar honestamente los propios motivos,
+    sin la presión de demostrar un llamado idealizado y sin culpa por reconocer motivaciones también
+    prácticas.`,
+    authors:"Watt y Richardson (2007), escala FIT-Choice"
+  },
+  {
+    tag:"Dimensión ética y moral",
+    title:"Un llamado que se hace visible en los gestos cotidianos",
+    body:`La vocación tiene una dimensión ética que trasciende la motivación inicial: enseñar es una
+    opción ética y política, no solo técnica. La docencia puede describirse como un "llamado" que se
+    realiza en los gestos cotidianos del aula: la manera de dirigirse a un estudiante, de corregir un
+    error, de sostener la atención de un grupo. Este llamado no tiene un origen místico; se
+    construye y se hace reconocible en la calidad moral de la práctica diaria, tan observable como
+    cualquier otra dimensión de la enseñanza.`,
+    authors:"Freire (1997); Hansen (1995)"
+  },
+  {
+    tag:"Dimensión identitaria",
+    title:"«Enseñamos quiénes somos»",
+    body:`La vocación no es algo que se posee además de la persona, sino algo que atraviesa quién es
+    esa persona. La calidad de la enseñanza no depende únicamente de las técnicas dominadas, sino de
+    la integridad con la que el docente conecta su identidad con su práctica; cuando esa conexión se
+    pierde, la enseñanza se vuelve mecánica aunque sea técnicamente correcta. Esta idea conecta
+    directamente con el autoconocimiento: no es posible sostener una vocación coherente sin
+    conocerse a sí mismo.`,
+    authors:"Palmer (1998)"
+  },
+  {
+    tag:"Sostenibilidad",
+    title:"Una vocación que se pone a prueba y se renueva",
+    body:`La vocación no es estática desde el ingreso a la formación docente: se sostiene, se pone a
+    prueba y se renueva con el tiempo. El compromiso vocacional fluctúa según las condiciones del
+    contexto, el apoyo institucional y la capacidad de resiliencia de cada persona; sostenerlo en el
+    tiempo es tan importante como sentirlo al inicio. Una vocación entendida únicamente como entrega
+    o sacrificio, sin atención al propio bienestar, puede volverse insostenible.`,
+    authors:"Day (2004); Day y Gu (2010)"
+  }
+];
+
+const ANALOGIES = [
+  {
+    concept:"Korthagen · niveles de cambio",
+    title:"El iceberg de la identidad docente",
+    body:`Lo que un observador ve en una clase —las técnicas, las conductas, el manejo del grupo— es
+    apenas la punta del iceberg. Debajo de la superficie, invisible pero decisivo, está el volumen
+    real: la identidad y la misión personal. Un iceberg no flota por su punta; flota por la masa que
+    no se ve. De la misma forma, una práctica docente no se sostiene por las técnicas aisladas, sino
+    por el "quién soy y para qué enseño" que las sostiene desde abajo.`
+  },
+  {
+    concept:"Day · cultivo de la vocación",
+    title:"La vocación como un jardín, no como una posesión",
+    body:`Nadie planta un jardín y lo abandona esperando que florezca solo. La vocación funciona
+    igual: se siembra con una motivación inicial, pero necesita riego, poda y atención constante. Un
+    jardín descuidado no desaparece de golpe: se marchita poco a poco, igual que una vocación
+    docente sin cuidado deliberado.`
+  },
+  {
+    concept:"Johari · retroalimentación",
+    title:"La casa de cuatro habitaciones",
+    body:`Imagina tu autoconocimiento como una casa con cuatro habitaciones: una con las luces
+    encendidas que tú y los demás ven (lo abierto), una que solo tú conoces (lo oculto), una que
+    guardas herméticamente cerrada para ti mismo (lo desconocido) y una cuarta a la que, sin
+    saberlo, solo otros tienen la llave: tu zona ciega. Nadie entra solo a esa cuarta habitación;
+    hace falta que alguien más —un compañero, el profesor de Prácticum, un docente del centro— te
+    abra la puerta con su retroalimentación.`
+  },
+  {
+    concept:"Bolívar · biografía escolar",
+    title:"El espejo retrovisor",
+    body:`Conducir mirando solo el espejo retrovisor es peligroso, pero conducir sin mirarlo nunca
+    también lo es. La biografía escolar funciona como ese espejo: contiene modelos —docentes que
+    admiramos o que quisiéramos no repetir— que siguen influyendo en cómo actuamos hoy, aunque no
+    los miremos conscientemente. El ejercicio de autoconocimiento no es dejar de mirar el espejo,
+    sino aprender a mirarlo a propósito, en el momento adecuado, para conducir mejor hacia adelante.`
+  },
+  {
+    concept:"Schön / Mezirow · portafolio",
+    title:"La bitácora de vuelo",
+    body:`Un piloto no lleva una bitácora solo para dejar constancia de lo que voló: la usa para
+    detectar patrones, corregir el rumbo y anticipar turbulencias. El portafolio reflexivo cumple la
+    misma función en la formación docente: no es un archivo de lo ya hecho, es el instrumento que
+    permite releer la ruta y recalcularla.`
+  }
+];
+
+const ANALOGY_ICONS = [
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><line x1="4" y1="34" x2="60" y2="34" class="ic-line"/><polygon points="32,10 44,34 20,34" class="ic-shape"/><polygon points="32,34 50,56 14,56" class="ic-shape-dim"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><path d="M32 40 C20 40 16 26 16 16 C26 16 32 22 32 30 C32 22 38 16 48 16 C48 26 44 40 32 40 Z" class="ic-shape"/><line x1="32" y1="40" x2="32" y2="52" class="ic-line"/><path d="M20 52 L44 52 L40 60 L24 60 Z" class="ic-shape"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><polyline points="10,28 32,10 54,28" class="ic-line"/><rect x="14" y="28" width="36" height="30" class="ic-shape"/><line x1="32" y1="28" x2="32" y2="58" class="ic-line"/><line x1="14" y1="43" x2="50" y2="43" class="ic-line"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><rect x="10" y="20" width="44" height="24" rx="10" class="ic-shape"/><line x1="32" y1="44" x2="32" y2="54" class="ic-line"/><line x1="20" y1="54" x2="44" y2="54" class="ic-line"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><rect x="14" y="10" width="36" height="46" rx="2" class="ic-shape"/><line x1="20" y1="20" x2="44" y2="20" class="ic-line"/><line x1="20" y1="28" x2="44" y2="28" class="ic-line"/><path d="M18 44 Q32 34 46 44" class="ic-line"/></svg>`
+];
+
+// ---- Helper to build a question ----
+function Q(prompt, options){ return {prompt, options}; }
+
+const CASES = {
+  basic:{
+    level:"Básico", levelClass:"basic",
+    title:"Caso 1 · Ana y los nervios del primer día",
+    who:"Ana, estudiante de Prácticum I",
+    scenario:`Faltan dos días para la primera visita de observación al centro educativo. Ana nota
+    que, cada vez que piensa en pararse frente a un grupo, siente un nudo en el estómago. Se
+    pregunta si eso significa que "no sirve para esto", y prefiere no comentarlo con nadie por
+    miedo a parecer poco preparada.`,
+    questions:[
+      Q("Desde la dimensión emocional del autoconocimiento docente, ¿qué es lo más acertado que Ana podría concluir sobre lo que siente?",[
+        {text:"Que el nerviosismo demuestra que la docencia no es lo suyo y debería reconsiderar la carrera.", correct:false,
+         feedback:"La enseñanza es un trabajo profundamente emocional: sentir nerviosismo no es una señal de incapacidad, sino una emoción esperable que forma parte de cómo cualquier futuro docente se experimenta a sí mismo en esta etapa."},
+        {text:"Que el nerviosismo es una emoción esperable y válida, y que reconocerla a tiempo es el primer paso de la autoconciencia emocional.", correct:true,
+         feedback:"Correcto. La autoconciencia —reconocer las propias emociones en el momento en que ocurren— es la base de la inteligencia emocional. Nombrar el nerviosismo, en vez de negarlo, es ya un acto de autoconocimiento."},
+        {text:"Que no debería sentir eso si de verdad tiene vocación, porque la vocación elimina el miedo.", correct:false,
+         feedback:"La vocación no es un estado que anula las emociones difíciles. Asumir que un docente vocacional 'no debería' sentir miedo es precisamente la idea de vocación romántica que conviene desmontar desde el inicio."}
+      ]),
+      Q("¿Qué recomendarías a Ana respecto a no comentar lo que siente con nadie?",[
+        {text:"Que está bien, porque el autoconocimiento es un proceso estrictamente individual e introspectivo.", correct:false,
+         feedback:"El autoconocimiento no se agota en la introspección. También tiene una dimensión social y relacional: el diálogo con otros es una de sus vías de acceso más importantes, no un paso opcional."},
+        {text:"Que hablarlo con su profesor de Prácticum o con sus pares puede ayudarle a ver algo que ella sola no alcanza a identificar.", correct:true,
+         feedback:"Correcto. Toda persona tiene zonas ciegas que solo se hacen visibles a través de la retroalimentación de otros. Compartir lo que siente abre precisamente esa vía de conocimiento que la introspección sola no ofrece."},
+        {text:"Que debería esperar a que el sentimiento desaparezca antes de hablarlo con alguien.", correct:false,
+         feedback:"Postergar la conversación no ayuda a procesar la emoción. La reflexión —incluida la que se hace en diálogo con otros— funciona mejor cuando ocurre cerca de la experiencia, no cuando ya se ha resuelto sola."}
+      ])
+    ]
+  },
+  intermediate:{
+    level:"Intermedio", levelClass:"intermediate",
+    title:"Caso 2 · Miguel y la culpa por sus motivos",
+    who:"Miguel, estudiante de Prácticum I",
+    scenario:`Al completar su ficha de motivaciones, Miguel reconoce que quiere ser docente porque
+    disfruta enseñar, pero también porque valora la estabilidad laboral del magisterio y porque su
+    familia lo ve con buenos ojos. Le preocupa que estos motivos "prácticos" signifiquen que su
+    vocación no es genuina, y considera no escribirlos en su autorretrato profesional para parecer
+    más comprometido.`,
+    questions:[
+      Q("Según la investigación sobre motivación docente (FIT-Choice), ¿cómo debería interpretar Miguel esta mezcla de motivos?",[
+        {text:"Como una señal de que su vocación es débil o insuficiente comparada con la de otros compañeros.", correct:false,
+         feedback:"La decisión de dedicarse a la enseñanza responde casi siempre a una combinación de motivos, no a uno solo. Interpretar la presencia de motivos prácticos como debilidad vocacional es exactamente el supuesto que esta investigación cuestiona."},
+        {text:"Como algo normal y frecuente: la mayoría de las personas elige la docencia por una combinación de motivos altruistas, intrínsecos y prácticos.", correct:true,
+         feedback:"Correcto. Reconocer esta pluralidad no desvaloriza la vocación; al contrario, permite examinar honestamente los propios motivos sin la presión de demostrar un llamado idealizado."},
+        {text:"Como un problema que debe resolver antes de continuar el Prácticum, eligiendo un único motivo 'verdadero'.", correct:false,
+         feedback:"No se trata de reducir los motivos a uno solo. La combinación de motivaciones es el patrón habitual, no una contradicción que deba resolverse artificialmente."}
+      ]),
+      Q("¿Qué le dirías sobre la idea de omitir esos motivos 'prácticos' en su autorretrato profesional?",[
+        {text:"Que tiene razón: el autorretrato debe mostrar solo la motivación más noble para causar una buena impresión.", correct:false,
+         feedback:"Omitir motivos reales convierte el autorretrato en una imagen idealizada en vez de un instrumento de autoconocimiento genuino. El ejercicio pierde su función si no refleja honestamente la pluralidad de motivos."},
+        {text:"Que incluir esos motivos con honestidad es más valioso que ocultarlos, porque el autoconocimiento requiere examinar los propios motivos sin culpa.", correct:true,
+         feedback:"Correcto. La formación docente no exige demostrar un llamado idealizado; exige la honestidad de reconocer las propias motivaciones, incluidas las prácticas, sin culpa."},
+        {text:"Que es indiferente, porque las motivaciones iniciales no tienen relación con la calidad futura de su enseñanza.", correct:false,
+         feedback:"Las motivaciones sí importan: son parte del núcleo identitario que, según Korthagen, sostiene y da coherencia a la práctica pedagógica. No son un dato irrelevante."}
+      ]),
+      Q("Miguel también menciona que su vocación 'debería sentirse igual siempre'. ¿Qué matiz aporta la idea de vocación como algo que se cultiva?",[
+        {text:"Que si la vocación fluctúa con el tiempo o el contexto, en realidad nunca existió.", correct:false,
+         feedback:"El compromiso vocacional fluctúa según el contexto, el apoyo institucional y la resiliencia de cada persona; esa fluctuación no significa ausencia de vocación, sino que la vocación necesita cultivo constante."},
+        {text:"Que la vocación es una disposición que se construye y se sostiene con el tiempo, no un estado fijo que se siente igual siempre.", correct:true,
+         feedback:"Correcto. La pasión y el compromiso emocional que sostienen la enseñanza requieren cultivo deliberado y pueden fluctuar; sostenerlos en el tiempo es tan importante como sentirlos al inicio."},
+        {text:"Que solo las personas con verdadera vocación evitan cualquier fluctuación emocional en su trayectoria.", correct:false,
+         feedback:"Esta idea repite la noción de vocación romántica e inmutable que la literatura sobre motivación docente y desarrollo profesional pone en duda."}
+      ])
+    ]
+  },
+  advanced:{
+    level:"Avanzado", levelClass:"advanced",
+    title:"Caso 3 · Sofía integra biografía, emoción y retroalimentación",
+    who:"Sofía, estudiante de Prácticum I",
+    scenario:`Sofía tuvo, en su educación básica, una maestra que humillaba públicamente a quienes
+    se equivocaban. Sin darse cuenta, Sofía ha desarrollado la costumbre de ser extremadamente dura
+    consigo misma cada vez que comete un error frente al grupo durante sus prácticas, y también
+    tiende a corregir a los estudiantes de forma más severa de lo que ella misma cree. Su profesor
+    de Prácticum le comenta, después de una observación, que notó cierta dureza en su forma de
+    corregir que ella no había identificado en sí misma. Sofía se siente agotada al final de cada
+    jornada y empieza a dudar si podrá sostener este nivel de exigencia durante todo el proceso.`,
+    questions:[
+      Q("¿Qué explica mejor, desde la raíz biográfica de la identidad docente, el patrón de dureza que Sofía repite sin proponérselo?",[
+        {text:"Que Sofía tiene un problema de carácter que no tiene relación con su historia escolar.", correct:false,
+         feedback:"La identidad docente se construye narrativamente: antes de la formación profesional, ya se han internalizado modelos implícitos de lo que significa enseñar, a partir de la propia experiencia como estudiante. El patrón de Sofía es coherente con ese proceso, no un rasgo aislado de carácter."},
+        {text:"Que Sofía ha internalizado, sin hacerlo consciente, un modelo escolar vivido en su propia biografía, que ahora reproduce en su práctica.", correct:true,
+         feedback:"Correcto. Los modelos —positivos y negativos— internalizados durante los propios años como estudiante influyen en las expectativas y conductas con que se llega al Prácticum, muchas veces sin que la persona los haya hecho conscientes."},
+        {text:"Que la severidad es simplemente el estilo docente que Sofía eligió deliberadamente para mantener el orden en el aula.", correct:false,
+         feedback:"El caso indica que Sofía no era consciente de esta severidad hasta que su profesor de Prácticum se la señaló; no se trata de una elección deliberada, sino de un patrón implícito que requería retroalimentación externa para hacerse visible."}
+      ]),
+      Q("El comentario del profesor de Prácticum sobre su forma de corregir ejemplifica principalmente:",[
+        {text:"Una evaluación de desempeño que Sofía debe simplemente aceptar sin cuestionarla.", correct:false,
+         feedback:"El valor del comentario no está en su carácter evaluativo, sino en que ilumina una zona ciega de Sofía: algo que otros veían y ella no. Reducirlo a una evaluación pierde ese sentido formativo."},
+        {text:"Una vía de acceso al autoconocimiento a través de una zona ciega que solo la retroalimentación de otra persona podía hacer visible.", correct:true,
+         feedback:"Correcto. Existen aspectos de uno mismo evidentes para los demás pero invisibles para quien los sostiene. El diálogo con el profesor de Prácticum es precisamente una de las vías más importantes para acceder a esas zonas ciegas."},
+        {text:"Una crítica personal sin relación con el proceso formativo del Prácticum.", correct:false,
+         feedback:"El comentario ocurre exactamente en el espacio para el que está pensado el Prácticum: hacer conscientes patrones que de otro modo permanecerían implícitos."}
+      ]),
+      Q("Frente al agotamiento y la duda sobre sostener 'este nivel de exigencia', ¿qué alerta conviene ofrecerle a Sofía?",[
+        {text:"Que el agotamiento es una prueba de que aún no tiene verdadera vocación docente.", correct:false,
+         feedback:"El agotamiento no mide la autenticidad de la vocación. De hecho, entender la vocación únicamente como entrega o exigencia sin atención al propio bienestar es precisamente lo que puede volverla insostenible."},
+        {text:"Que exigirse al nivel de dureza que reproduce, sin atender su propio bienestar, es un patrón que puede volver insostenible su vocación con el tiempo.", correct:true,
+         feedback:"Correcto. El compromiso vocacional fluctúa según el contexto y la capacidad de resiliencia; una vocación entendida solo como entrega o sacrificio, sin cuidado del propio bienestar, puede volverse insostenible."},
+        {text:"Que debe ignorar el comentario del profesor de Prácticum y continuar con su forma habitual de corregir.", correct:false,
+         feedback:"Ignorar la retroalimentación recibida cierra justamente la vía de autoconocimiento que el caso muestra como más valiosa: la que proviene de otros."}
+      ]),
+      Q("Integrando biografía, emoción y retroalimentación, ¿cuál sería el paso más coherente para el portafolio reflexivo de Sofía?",[
+        {text:"Registrar el episodio como una anécdota aislada, sin conectarlo con su historia escolar ni con el comentario recibido.", correct:false,
+         feedback:"Registrar el hecho sin conectarlo con la biografía ni con la retroalimentación pierde justamente la función del portafolio: hacer visible y revisable lo que permanece implícito."},
+        {text:"Someter a examen crítico el supuesto implícito de que corregir con dureza es 'lo correcto', reconstruyendo su origen biográfico y contrastándolo con lo observado por su profesor.", correct:true,
+         feedback:"Correcto. El aprendizaje transformador exige someter a examen crítico los supuestos que se dan por sentados, muchos adquiridos de forma acrítica durante la propia trayectoria escolar; el portafolio es el instrumento para hacer ese proceso visible y revisable."},
+        {text:"Esperar a que el patrón desaparezca solo con la experiencia acumulada, sin necesidad de escribir sobre él.", correct:false,
+         feedback:"La experiencia por sí sola no garantiza el cambio si no se somete a reflexión explícita; el registro narrativo es precisamente lo que convierte la experiencia en aprendizaje sobre uno mismo."}
+      ])
+    ]
+  }
+};
+
+// FINAL TEST: advanced case, only right/wrong tally, no per-item theory feedback.
+const FINAL_TEST = {
+  title:"Evaluación · Caso avanzado de Diego",
+  who:"Diego, estudiante de Prácticum I",
+  scenario:`Diego creció admirando a un maestro de primaria que siempre tenía tiempo para escuchar
+  a sus estudiantes, y eligió la docencia sobre todo por eso. Durante su primera semana de
+  observación, un docente titular le comenta —con buena intención— que lo ve "demasiado blando"
+  con el grupo y que "así no va a poder controlarlos". Diego sale de esa conversación
+  cuestionando si su forma de ser es incompatible con la docencia, y esa noche escribe en su
+  portafolio que quizás debería "endurecer su personalidad" antes de continuar el Prácticum.
+  Al mismo tiempo, reconoce que la idea de tener que cambiar quién es para encajar en el aula le
+  genera una angustia que no sabe cómo nombrar del todo.`,
+  questions:[
+    Q("¿Qué principio teórico es más relevante para responder a la idea de Diego de 'endurecer su personalidad'?",[
+      {text:"La idea de Palmer de que 'enseñamos quiénes somos': la calidad de la enseñanza depende de la integridad entre identidad y práctica, no de imitar un estilo ajeno.", correct:true},
+      {text:"El modelo de niveles de cambio de Korthagen, pero aplicado únicamente a la adquisición de técnicas de manejo de grupo.", correct:false},
+      {text:"La escala FIT-Choice, ya que el problema de Diego es exclusivamente de motivación inicial.", correct:false},
+      {text:"El concepto de tacto pedagógico de Van Manen, entendido como un rasgo innato que Diego simplemente no posee.", correct:false}
+    ]),
+    Q("El comentario del docente titular sobre ser 'demasiado blando' puede entenderse mejor como:",[
+      {text:"Una prueba definitiva de que Diego no tiene el perfil adecuado para la docencia.", correct:false},
+      {text:"Retroalimentación desde una zona potencialmente ciega, que Diego necesita examinar críticamente en vez de aceptar o descartar de forma automática.", correct:true},
+      {text:"Una opinión irrelevante que debería ignorar por completo, sin ningún tipo de reflexión.", correct:false},
+      {text:"Una instrucción técnica que debe aplicar literalmente, cambiando su forma de ser.", correct:false}
+    ]),
+    Q("La biografía escolar de Diego —admirar a un maestro que escuchaba a sus estudiantes— es relevante porque:",[
+      {text:"No tiene ninguna relación con su manera actual de vincularse con el grupo durante el Prácticum.", correct:false},
+      {text:"Es uno de los modelos implícitos internalizados desde su propia trayectoria como estudiante, que orienta —a veces sin que él lo note— su forma de entender la docencia.", correct:true},
+      {text:"Demuestra que Diego eligió la docencia únicamente por motivos prácticos y no vocacionales.", correct:false},
+      {text:"Es un dato anecdótico que solo sirve para el autorretrato, sin relación con las decisiones pedagógicas.", correct:false}
+    ]),
+    Q("La angustia que Diego no sabe nombrar del todo corresponde principalmente a:",[
+      {text:"Un fallo de carácter que debe resolver antes de continuar el Prácticum.", correct:false},
+      {text:"La dimensión emocional del autoconocimiento docente: una emoción real ligada a su identidad, que requiere autoconciencia antes que autorregulación o cambio de conducta.", correct:true},
+      {text:"Un problema exclusivamente logístico de manejo de grupo que se resuelve con más técnicas de disciplina.", correct:false},
+      {text:"Una señal de que su vocación inicial era falsa desde el principio.", correct:false}
+    ]),
+    Q("¿Cuál sería el registro más coherente para el portafolio de Diego frente a esta situación?",[
+      {text:"Anotar simplemente 'debo ser más duro' y pasar a la siguiente actividad sin más análisis.", correct:false},
+      {text:"Examinar críticamente el supuesto de que 'ser blando' es incompatible con manejar un grupo, contrastando el comentario recibido con su propia biografía y sin renunciar a su integridad identitaria.", correct:true},
+      {text:"No escribir nada, para evitar que quede constancia de una duda vocacional.", correct:false},
+      {text:"Registrar únicamente que el docente titular se equivocó, sin considerar ningún elemento de la retroalimentación.", correct:false}
+    ])
+  ]
+};
+
+const PAUSAS = {
+  pausa1:{
+    title:"Antes de entrar al caso de Sofía",
+    lead:"El caso que sigue trata temas de agotamiento y autoexigencia. Tómate unos segundos para notar cómo te sientes antes de continuar.",
+    why:"La autoconciencia —notar una emoción antes de actuar— es la base de la autorregulación. Practicarla aquí, antes de leer un caso exigente, es coherente con lo que el propio marco teórico plantea."
+  },
+  pausa2:{
+    title:"Antes de la evaluación final",
+    lead:"Estás por resolver un caso de nivel avanzado que sí se califica. Respira brevemente antes de comenzar, sin prisa.",
+    why:"Llegar con calma a una evaluación no cambia el conocimiento que ya tienes, pero sí facilita acceder a él con claridad."
+  }
+};
+
+/* ============================= ESTADO ============================= */
+
+const STEPS = [
+  {id:"portada", label:"Portada"},
+  {id:"teoria", label:"Marco teórico"},
+  {id:"analogias", label:"Analogías"},
+  {id:"caso1", label:"Caso básico"},
+  {id:"caso2", label:"Caso intermedio"},
+  {id:"pausa1", label:"Pausa"},
+  {id:"caso3", label:"Caso avanzado"},
+  {id:"retro", label:"Retroalimentación"},
+  {id:"pausa2", label:"Pausa"},
+  {id:"evaluacion", label:"Evaluación final"},
+  {id:"ficha", label:"Ficha reflexiva"},
+  {id:"cierre", label:"Cierre"}
+];
+
+function initState(){
+  const caseMeta = {};
+  Object.keys(CASES).forEach(k=>{
+    const n = CASES[k].questions.length;
+    caseMeta[k] = { reveal:new Array(n).fill(false), open:new Array(n).fill("") };
+  });
+  return {
+    current: 0,
+    furthest: 0,
+    caseAnswers: { basic:[], intermediate:[], advanced:[] },
+    caseMeta: caseMeta,
+    testAnswers: [],
+    theoryView: 'accordion',
+    ficha: {
+      bio1:"", bio2:"",
+      emotions:[], readiness:3, emoWhy:"",
+      motivations:[], motivWhy:"",
+      identity1:"", identity2:"",
+      portrait:"", recording:false, audioUrl:null, recordError:false,
+      commitments:["","",""], questions:["",""],
+      peer:""
+    }
+  };
+}
+let state = initState();
+window.__lastChoice = {};
+window.__lastTestChoice = {};
+window.__speakingBtn = null;
+let mediaRecorder = null;
+let audioChunks = [];
+
+function goTo(idx){
+  if(idx > state.furthest) return;
+  state.current = idx;
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function advance(){
+  if(state.current < STEPS.length - 1){
+    state.current += 1;
+    if(state.current > state.furthest) state.furthest = state.current;
+    render();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+}
+function back(){
+  if(state.current > 0){ state.current -= 1; render(); window.scrollTo({top:0, behavior:"smooth"}); }
+}
+function startRoute(targetId){
+  const idx = STEPS.findIndex(s=>s.id===targetId);
+  if(idx<0) return;
+  state.current = idx;
+  if(idx>state.furthest) state.furthest = idx;
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ============================= AUDIO (TTS) ============================= */
+
+function speakText(btnId, text){
+  if(!('speechSynthesis' in window)){
+    alert('Tu navegador no permite lectura en voz alta en este momento.');
+    return;
+  }
+  const btn = document.getElementById(btnId);
+  if(window.__speakingBtn === btnId){
+    speechSynthesis.cancel();
+    window.__speakingBtn = null;
+    if(btn) btn.textContent = btn.dataset.label || '🔊 Escuchar';
+    return;
+  }
+  speechSynthesis.cancel();
+  const clean = text.replace(/\s+/g,' ').trim();
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = 'es-ES';
+  utter.rate = 0.98;
+  utter.onend = function(){
+    window.__speakingBtn = null;
+    if(btn) btn.textContent = btn.dataset.label || '🔊 Escuchar';
+  };
+  window.__speakingBtn = btnId;
+  if(btn){ btn.dataset.label = btn.textContent; btn.textContent = '⏸ Detener'; }
+  speechSynthesis.speak(utter);
+}
+function speakTheory(i){ const t=THEORY[i]; speakText('audio-theory-'+i, t.title+'. '+t.body); }
+function speakAnalogy(i){ const a=ANALOGIES[i]; speakText('audio-an-'+i, a.title+'. '+a.body); }
+function speakScenario(key){ const c=CASES[key]; speakText('audio-case-'+key, c.who+'. '+c.scenario); }
+function speakTestScenario(){ speakText('audio-test', FINAL_TEST.who+'. '+FINAL_TEST.scenario); }
+
+/* ============================= RENDER ============================= */
+
+function render(){
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    ${renderHeader()}
+    ${renderStepper()}
+    <div class="panel">${renderPanel()}</div>
+    <footer class="note">Practicum I · Construcción de la Identidad Profesional — Unidad 1: Autoconocimiento y vocación docente. Simulador de apoyo formativo.</footer>
+  `;
+}
+
+function renderHeader(){
+  return `
+  <div class="institutional">
+    <div class="crest-row">
+      <div class="crest">UP</div>
+      <div class="lines">
+        <strong>Universidad Pedagógica Nacional Francisco Morazán</strong>
+        <span>Facultad de Ciencias Básicas</span>
+        <span>Departamento de Educación Comercial</span>
+        <span>Asignatura: Practicum I · Dr. José Raúl Castillo Rosales</span>
+      </div>
+    </div>
+    <div class="sim-title">
+      <div class="unidad">Unidad 1 — Simulador formativo</div>
+      <h1>Autoconocimiento y vocación docente</h1>
+    </div>
+  </div>`;
+}
+
+function renderStepper(){
+  return `<div class="stepper">
+    ${STEPS.map((s,i)=>`
+      <button class="step-btn ${i===state.current?'active':''} ${i<state.current?'done':''}"
+        ${i>state.furthest?'disabled':''} onclick="goTo(${i})">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>${s.label}
+      </button>`).join('')}
+  </div>`;
+}
+
+function renderPanel(){
+  const id = STEPS[state.current].id;
+  if(id==="portada") return renderPortada();
+  if(id==="teoria") return renderTeoria();
+  if(id==="analogias") return renderAnalogias();
+  if(id==="caso1") return renderCase("basic");
+  if(id==="caso2") return renderCase("intermediate");
+  if(id==="pausa1") return renderPausa("pausa1");
+  if(id==="caso3") return renderCase("advanced");
+  if(id==="retro") return renderRetro();
+  if(id==="pausa2") return renderPausa("pausa2");
+  if(id==="evaluacion") return renderEvaluacion();
+  if(id==="ficha") return renderFicha();
+  if(id==="cierre") return renderCierre();
+}
+
+function renderPortada(){
+  return `
+    <div class="eyebrow">Bienvenida al simulador</div>
+    <h2>Antes de observar aulas reales, obsérvate a ti mismo/a</h2>
+    <p class="lead">Este simulador acompaña la Unidad 1 del Prácticum I. Recorrerás el marco
+    teórico completo, analogías, tres casos guiados de dificultad creciente, pausas conscientes,
+    una síntesis de tu recorrido, una evaluación de conocimiento con retroalimentación de resultado,
+    y una Ficha de Trabajo Reflexiva para tu portafolio.</p>
+    <div class="card">
+      <span class="tag">Ruta del simulador</span>
+      <p class="small">Marco teórico completo (con audio y línea de tiempo) · Analogías ilustradas ·
+      Tres casos guiados con respuesta abierta y retroalimentación explicativa · Pausas conscientes ·
+      Retroalimentación de tu recorrido · Evaluación de conocimiento (caso avanzado) · Ficha de
+      Trabajo Reflexiva · Cierre con resumen descargable.</p>
+    </div>
+    <p class="lead" style="margin-top:18px;">Elige por dónde empezar:</p>
+    <div class="route-row">
+      <button class="btn" onclick="startRoute('teoria')">Explorar la teoría primero →</button>
+      <button class="btn ghost" onclick="startRoute('caso1')">Ir directo a los casos →</button>
+    </div>
+  `;
+}
+
+function renderTeoria(){
+  const view = state.theoryView;
+  return `
+    <div class="eyebrow">Marco teórico</div>
+    <h2>Fundamentos del autoconocimiento y la vocación docente</h2>
+    <p class="lead">Los términos con línea punteada tienen una definición breve al pasar el cursor
+    (o al mantener presionado en móvil). Cada apartado también se puede escuchar.</p>
+    <div class="view-toggle">
+      <button class="vt-btn ${view==='accordion'?'active':''}" onclick="setTheoryView('accordion')">Acordeón por tema</button>
+      <button class="vt-btn ${view==='timeline'?'active':''}" onclick="setTheoryView('timeline')">Línea de tiempo por autor</button>
+    </div>
+    ${view==='accordion' ? renderTheoryAccordion() : renderTheoryTimeline()}
+    ${navRow(true,true)}
+  `;
+}
+function setTheoryView(v){ state.theoryView = v; render(); }
+
+function renderTheoryAccordion(){
+  return THEORY.map((t,i)=>`
+    <details class="theory">
+      <summary><span>${t.title}</span></summary>
+      <div class="theory-body">
+        <span class="tag">${t.tag}</span><br>
+        <button class="audio-btn" id="audio-theory-${i}" onclick="speakTheory(${i})">🔊 Escuchar</button>
+        <p>${applyGlossary(t.body)}</p>
+        <p class="authors">${t.authors}</p>
+      </div>
+    </details>
+  `).join('');
+}
+
+function extractYear(str){
+  const m = str.match(/(\d{4})/);
+  return m ? parseInt(m[1]) : 9999;
+}
+function renderTheoryTimeline(){
+  const items = THEORY.map((t,i)=>({title:t.title, tag:t.tag, body:t.body, authors:t.authors, idx:i, year:extractYear(t.authors)}))
+    .sort((a,b)=>a.year-b.year);
+  return `<div class="timeline">
+    ${items.map(t=>`
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">${t.year===9999?'—':t.year}</div>
+        <h3>${t.title}</h3>
+        <span class="tag">${t.tag}</span><br>
+        <button class="audio-btn" id="audio-theory-${t.idx}" onclick="speakTheory(${t.idx})">🔊 Escuchar</button>
+        <p class="small">${applyGlossary(t.body)}</p>
+        <p class="authors">${t.authors}</p>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function renderAnalogias(){
+  return `
+    <div class="eyebrow">Analogías</div>
+    <h2>Cinco imágenes para sostener los conceptos</h2>
+    <p class="lead">Cada analogía combina un icono, texto y audio. Vuelve a ellas si necesitas
+    recordar un concepto durante los casos.</p>
+    ${ANALOGIES.map((a,i)=>`
+      <div class="analogy-card">
+        ${ANALOGY_ICONS[i]}
+        <div class="analogy-text">
+          <div class="concept">${a.concept}</div>
+          <div class="analogy-head">
+            <h3>${a.title}</h3>
+            <button class="audio-btn" id="audio-an-${i}" onclick="speakAnalogy(${i})">🔊</button>
+          </div>
+          <p>${applyGlossary(a.body)}</p>
+        </div>
+      </div>
+    `).join('')}
+    ${navRow(true,true)}
+  `;
+}
+
+function renderCase(key){
+  const c = CASES[key];
+  const answers = state.caseAnswers[key];
+  const answeredAll = answers.length === c.questions.length;
+
+  return `
+    <div class="eyebrow">Caso guiado · Nivel ${c.level}</div>
+    <h2>${c.title}</h2>
+    <div class="scenario-box">
+      <div class="who">${c.who}</div>
+      <button class="audio-btn" id="audio-case-${key}" onclick="speakScenario('${key}')">🔊 Escuchar el caso</button>
+      <p>${applyGlossary(c.scenario)}</p>
+    </div>
+    <div id="case-questions">
+      ${c.questions.map((q,qi)=>renderQuestion(key,qi,q,answers[qi])).join('')}
+    </div>
+    ${navRow(true, answeredAll)}
+  `;
+}
+
+function renderQuestion(caseKey, qIndex, q, answeredCorrect){
+  const meta = state.caseMeta[caseKey];
+  const revealed = meta.reveal[qIndex];
+  const openVal = meta.open[qIndex] || "";
+  const answered = answeredCorrect !== undefined;
+
+  if(!revealed){
+    return `
+      <div class="question-block">
+        <div class="qtext">${qIndex+1}. ${q.prompt}</div>
+        <div class="open-response">
+          <label class="or-label">Antes de ver las opciones, escribe brevemente tu propia respuesta (no se califica):</label>
+          <textarea class="or-input" rows="2" placeholder="Escribe aquí tu idea..." oninput="updateOpenResponse('${caseKey}',${qIndex},this.value)">${escapeHtml(openVal)}</textarea>
+          <button class="btn ghost small" onclick="revealOptions('${caseKey}',${qIndex})">Ya reflexioné, ver opciones →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="question-block">
+      <div class="qtext">${qIndex+1}. ${q.prompt}</div>
+      ${openVal ? `<div class="or-recall"><span class="or-tag">Tu respuesta inicial</span>${escapeHtml(openVal)}</div>` : ''}
+      ${q.options.map((opt,oi)=>{
+        let cls = "option";
+        if(answered){
+          cls += " locked";
+          if(opt.correct) cls += " correct";
+        }
+        return `
+          <label class="${cls}" onclick="${answered?'':`answerCase('${caseKey}',${qIndex},${oi})`}">
+            <input type="radio" name="q-${caseKey}-${qIndex}" ${answered?'disabled':''}>
+            <span class="otext">${opt.text}</span>
+          </label>`;
+      }).join('')}
+      <div id="fb-${caseKey}-${qIndex}" class="feedback-box ${answered? (answeredCorrect?'correct show':'incorrect show') : ''}">
+        ${answered ? feedbackHtml(caseKey,qIndex,answeredCorrect) : ''}
+      </div>
+    </div>
+  `;
+}
+
+function feedbackHtml(caseKey, qIndex, wasCorrect){
+  const q = CASES[caseKey].questions[qIndex];
+  const chosen = window.__lastChoice[caseKey+'-'+qIndex];
+  const opt = chosen!==undefined ? q.options[chosen] : q.options.find(o=>o.correct);
+  return `<span class="verdict">${wasCorrect? "Acertaste" : "No del todo"}</span>${opt.feedback}`;
+}
+
+function revealOptions(caseKey, qIndex){
+  state.caseMeta[caseKey].reveal[qIndex] = true;
+  render();
+  const el = document.getElementById('case-questions');
+  if(el) el.scrollIntoView({behavior:"instant", block:"start"});
+}
+function updateOpenResponse(caseKey, qIndex, val){
+  state.caseMeta[caseKey].open[qIndex] = val;
+}
+function answerCase(caseKey, qIndex, optIndex){
+  const q = CASES[caseKey].questions[qIndex];
+  const opt = q.options[optIndex];
+  window.__lastChoice[caseKey+'-'+qIndex] = optIndex;
+  state.caseAnswers[caseKey][qIndex] = !!opt.correct;
+  render();
+  const el = document.getElementById('case-questions');
+  if(el) el.scrollIntoView({behavior:"instant", block:"start"});
+}
+
+function navRow(showBack, nextEnabled){
+  return `
+    <div class="btn-row">
+      ${showBack ? `<button class="btn ghost" onclick="back()">← Atrás</button>` : `<span></span>`}
+      <button class="btn" ${nextEnabled?'':'disabled'} onclick="advance()">Continuar →</button>
+    </div>`;
+}
+
+function renderPausa(id){
+  const cfg = PAUSAS[id];
+  return `
+    <div class="eyebrow">Pausa consciente</div>
+    <h2>${cfg.title}</h2>
+    <p class="lead">${cfg.lead}</p>
+    <div class="breathing-wrap">
+      <div class="breathing-circle"></div>
+      <p class="breathing-hint">Inhala 4 segundos · sostén 4 segundos · exhala 6 segundos<br>Repite mientras te sientas lista/o para continuar.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Por qué esta pausa</span>
+      <p class="small">${cfg.why}</p>
+    </div>
+    ${navRow(true,true)}
+  `;
+}
+
+function renderRetro(){
+  const summaries = ["basic","intermediate","advanced"].map(k=>{
+    const c = CASES[k];
+    const ans = state.caseAnswers[k];
+    const correct = ans.filter(Boolean).length;
+    return {key:k, title:c.title, level:c.level, correct, total:c.questions.length};
+  });
+  const totalCorrect = summaries.reduce((s,x)=>s+x.correct,0);
+  const totalQ = summaries.reduce((s,x)=>s+x.total,0);
+  const pct = Math.round((totalCorrect/totalQ)*100);
+
+  let levelMsg, levelDetail;
+  if(pct >= 85){
+    levelMsg = "Integración sólida";
+    levelDetail = `Tu recorrido muestra una comprensión sólida de cómo dialogan el autoconocimiento
+    biográfico, emocional y relacional con la vocación docente. Sostener esta claridad te será útil
+    al escribir tu autorretrato profesional: procura seguir contrastando tus interpretaciones con la
+    retroalimentación de tu profesor de Prácticum y de tus pares, ya que incluso una buena
+    autoconciencia convive con zonas ciegas.`;
+  } else if(pct >= 60){
+    levelMsg = "En construcción, con buena base";
+    levelDetail = `Reconoces varios de los principios centrales, pero conviene revisar con más calma
+    los casos donde la respuesta requería integrar más de una dimensión a la vez —por ejemplo,
+    biografía y emoción, o motivación y ética—. Vuelve a las analogías del iceberg y de la casa de
+    Johari antes de avanzar a la evaluación final.`;
+  } else {
+    levelMsg = "Punto de partida para profundizar";
+    levelDetail = `Este resultado es un buen punto de partida, no una calificación definitiva: el
+    autoconocimiento docente es, por definición, un proceso que no se cierra en una sola sesión.
+    Te sugerimos releer el marco teórico completo, especialmente los apartados de Korthagen, Bolívar
+    y Palmer, antes de continuar con la evaluación final.`;
+  }
+
+  return `
+    <div class="eyebrow">Retroalimentación de tu recorrido</div>
+    <h2>Síntesis formativa de los tres casos</h2>
+    <div class="final-summary">
+      <div class="level">${levelMsg}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <p class="small" style="color:var(--ink-soft); margin-bottom:0;">${totalCorrect} de ${totalQ} decisiones alineadas con el marco teórico (${pct}%).</p>
+    </div>
+    <p>${levelDetail}</p>
+    <div class="result-grid">
+      ${summaries.map(s=>`
+        <div class="result-tile">
+          <div class="n">${s.correct}/${s.total}</div>
+          <div class="lbl">${s.title.split('·')[0].trim()} — nivel ${s.level}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card">
+      <span class="tag">Antes de continuar</span>
+      <p class="small">Después de la siguiente pausa consciente encontrarás una evaluación de
+      conocimiento con un caso de nivel avanzado. Allí solo verás qué respuestas fueron correctas o
+      incorrectas, sin explicación teórica por pregunta.</p>
+    </div>
+    ${navRow(true,true)}
+  `;
+}
+
+function renderEvaluacion(){
+  const answers = state.testAnswers;
+  const answeredAll = answers.length === FINAL_TEST.questions.length;
+  return `
+    <div class="eyebrow">Evaluación de conocimiento</div>
+    <h2>${FINAL_TEST.title}</h2>
+    <div class="scenario-box">
+      <div class="who">${FINAL_TEST.who}</div>
+      <button class="audio-btn" id="audio-test" onclick="speakTestScenario()">🔊 Escuchar el caso</button>
+      <p>${applyGlossary(FINAL_TEST.scenario)}</p>
+    </div>
+    <div class="card" style="background:var(--paper-2);">
+      <p class="small" style="margin-bottom:0;"><strong>Instrucciones:</strong> selecciona una opción por
+      pregunta. Solo se indicará si tu respuesta fue correcta o incorrecta; no se mostrará
+      explicación teórica hasta que completes toda la evaluación.</p>
+    </div>
+    <div id="test-questions">
+      ${FINAL_TEST.questions.map((q,qi)=>renderTestQuestion(qi,q,answers[qi])).join('')}
+    </div>
+    ${answeredAll ? renderTestResults() : `
+      <div class="btn-row">
+        <button class="btn ghost" onclick="back()">← Atrás</button>
+        <span></span>
+      </div>
+    `}
+  `;
+}
+
+function renderTestQuestion(qIndex, q, answeredCorrect){
+  const answered = answeredCorrect !== undefined;
+  return `
+    <div class="question-block">
+      <div class="qtext">${qIndex+1}. ${q.prompt}</div>
+      ${q.options.map((opt,oi)=>{
+        let cls = "option";
+        if(answered) cls += " locked";
+        if(answered && opt.correct) cls += " correct";
+        if(answered && !opt.correct && window.__lastTestChoice[qIndex]===oi) cls += " incorrect";
+        return `
+          <label class="${cls}" onclick="${answered?'':`answerTest(${qIndex},${oi})`}">
+            <input type="radio" name="q-test-${qIndex}" ${answered?'disabled':''}>
+            <span class="otext">${opt.text}</span>
+          </label>`;
+      }).join('')}
+      ${answered ? `<div class="feedback-box ${answeredCorrect?'correct':'incorrect'} show">
+        <span class="verdict">${answeredCorrect? "✓ Correcto" : "✗ Incorrecto"}</span>
+      </div>` : ''}
+    </div>
+  `;
+}
+
+function answerTest(qIndex, optIndex){
+  const q = FINAL_TEST.questions[qIndex];
+  const opt = q.options[optIndex];
+  window.__lastTestChoice[qIndex] = optIndex;
+  state.testAnswers[qIndex] = !!opt.correct;
+  render();
+  const el = document.getElementById('test-questions');
+  if(el) el.scrollIntoView({behavior:"instant", block:"start"});
+}
+
+function testFeedbackMessage(pct){
+  if(pct>=80) return "Resultado sólido: integras con soltura biografía, emoción, identidad y retroalimentación en un caso complejo.";
+  if(pct>=50) return "Vas por buen camino: revisa las preguntas con desacierto y vuelve a las tarjetas teóricas relacionadas antes de escribir tu autorretrato.";
+  return "Este resultado es información, no una sentencia: vuelve al marco teórico y a los casos guiados antes de tu próxima observación en el centro educativo.";
+}
+
+function renderTestResults(){
+  const correct = state.testAnswers.filter(Boolean).length;
+  const total = FINAL_TEST.questions.length;
+  const incorrect = total - correct;
+  const pct = Math.round((correct/total)*100);
+  return `
+    <div class="final-summary">
+      <div class="level">Resultado de la evaluación</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <p class="small" style="margin-bottom:0; color:var(--ink-soft);">${testFeedbackMessage(pct)}</p>
+    </div>
+    <div class="result-grid">
+      <div class="result-tile ok"><div class="n">${correct}</div><div class="lbl">Aciertos</div></div>
+      <div class="result-tile bad"><div class="n">${incorrect}</div><div class="lbl">Desaciertos</div></div>
+    </div>
+    ${FINAL_TEST.questions.map((q,qi)=>`
+      <div class="test-item-status">
+        <span class="dot ${state.testAnswers[qi]?'ok':'bad'}"></span>
+        Pregunta ${qi+1}: ${state.testAnswers[qi] ? 'acierto' : 'desacierto'}
+      </div>
+    `).join('')}
+    ${navRow(true,true)}
+  `;
+}
+
+/* ============================= FICHA REFLEXIVA ============================= */
+
+function updateFicha(key, val){ state.ficha[key] = val; }
+function updateFichaRange(val){
+  state.ficha.readiness = val;
+  const el = document.querySelector('.slider-val');
+  if(el) el.textContent = val+'/5';
+}
+function toggleEmotion(em){
+  const arr = state.ficha.emotions;
+  const idx = arr.indexOf(em);
+  if(idx>-1) arr.splice(idx,1); else arr.push(em);
+  render();
+}
+function toggleMotivation(key){
+  const arr = state.ficha.motivations;
+  const idx = arr.indexOf(key);
+  if(idx>-1) arr.splice(idx,1); else arr.push(key);
+  render();
+}
+function updateFichaArr(field, idx, val){ state.ficha[field][idx] = val; }
+
+async function startRecording(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = function(){
+      const blob = new Blob(audioChunks, {type:'audio/webm'});
+      state.ficha.audioUrl = URL.createObjectURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+      render();
+    };
+    mediaRecorder.start();
+    state.ficha.recording = true;
+    state.ficha.recordError = false;
+    render();
+  }catch(err){
+    state.ficha.recordError = true;
+    render();
+  }
+}
+function stopRecording(){
+  if(mediaRecorder && mediaRecorder.state === 'recording'){ mediaRecorder.stop(); }
+  state.ficha.recording = false;
+}
+function resetRecording(){
+  state.ficha.audioUrl = null;
+  state.ficha.recordError = false;
+  render();
+}
+
+function renderFicha(){
+  const f = state.ficha;
+  const emotionsList = ['Entusiasmo','Curiosidad','Seguridad','Temor o nerviosismo','Ansiedad','Motivación'];
+  const motivList = [
+    ['altruista','Altruista — contribuir a la sociedad, ayudar a otros a aprender.'],
+    ['intrinseca','Intrínseca — disfruto enseñar y compartir el conocimiento.'],
+    ['practica','Práctica — estabilidad laboral, influencia familiar, otros planes de vida.']
+  ];
+  return `
+    <div class="eyebrow">Portafolio · Ficha de Trabajo Reflexiva</div>
+    <h2>Unidad 1 — Autoconocimiento y vocación docente</h2>
+    <p class="lead">Complétala con calma; es uno de los insumos principales de tu Portafolio
+    reflexivo digital. Nada de esta ficha se califica.</p>
+
+    <div class="card">
+      <span class="tag">Parte I · Mi biografía escolar</span>
+      <label class="field-label">Un momento o persona significativa en tu trayectoria escolar:</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('bio1', this.value)">${escapeHtml(f.bio1)}</textarea>
+      <label class="field-label">¿Qué te enseñó sobre "ser docente"? ¿Es un modelo a seguir o a evitar?</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('bio2', this.value)">${escapeHtml(f.bio2)}</textarea>
+    </div>
+
+    <div class="card">
+      <span class="tag">Parte II · Mi dimensión emocional</span>
+      <label class="field-label">Emociones que reconoces frente a un grupo de estudiantes:</label>
+      <div class="chip-row">
+        ${emotionsList.map(em=>`
+          <label class="chip ${f.emotions.includes(em)?'checked':''}">
+            <input type="checkbox" ${f.emotions.includes(em)?'checked':''} onchange="toggleEmotion('${em}')"> ${em}
+          </label>
+        `).join('')}
+      </div>
+      <label class="field-label">¿Qué tan preparado/a te sientes hoy para estar frente a un grupo?</label>
+      <div class="slider-row">
+        <input type="range" min="1" max="5" value="${f.readiness}" oninput="updateFichaRange(this.value)">
+        <span class="slider-val">${f.readiness}/5</span>
+      </div>
+      <label class="field-label">¿Qué situaciones crees que serán más desafiantes emocionalmente? ¿Por qué?</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('emoWhy', this.value)">${escapeHtml(f.emoWhy)}</textarea>
+    </div>
+
+    <div class="card">
+      <span class="tag">Parte III · ¿Por qué quiero ser docente?</span>
+      ${motivList.map(([key,label])=>`
+        <label class="chip block ${f.motivations.includes(key)?'checked':''}">
+          <input type="checkbox" ${f.motivations.includes(key)?'checked':''} onchange="toggleMotivation('${key}')"> ${label}
+        </label>
+      `).join('')}
+      <label class="field-label">¿Qué combinación de motivos reconoces en ti? ¿Te sorprende alguno?</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('motivWhy', this.value)">${escapeHtml(f.motivWhy)}</textarea>
+    </div>
+
+    <div class="card">
+      <span class="tag">Parte IV · Vocación como compromiso e identidad</span>
+      <label class="field-label">«Enseñamos quienes somos» (Palmer). ¿Dónde has notado que tu forma de ser influye en cómo te relacionas con otros?</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('identity1', this.value)">${escapeHtml(f.identity1)}</textarea>
+      <label class="field-label">¿Qué compromisos éticos asumes como futuro/a docente, más allá de dominar contenidos?</label>
+      <textarea class="field-input" rows="2" oninput="updateFicha('identity2', this.value)">${escapeHtml(f.identity2)}</textarea>
+    </div>
+
+    <div class="card">
+      <span class="tag">Parte V · Mi autorretrato profesional inicial</span>
+      <p class="small">Integra tu biografía, tus emociones, tus creencias iniciales y tus motivaciones.</p>
+      <textarea class="field-input" rows="4" oninput="updateFicha('portrait', this.value)">${escapeHtml(f.portrait)}</textarea>
+      <div class="record-row">
+        ${(!f.recording && !f.audioUrl) ? `<button class="btn ghost small" onclick="startRecording()">🎙 Grabar mi autorretrato (opcional)</button>` : ''}
+        ${f.recording ? `<button class="btn ghost small" onclick="stopRecording()">⏹ Detener grabación</button>` : ''}
+        ${f.audioUrl ? `<audio controls src="${f.audioUrl}"></audio><button class="btn ghost small" onclick="resetRecording()">Grabar de nuevo</button>` : ''}
+      </div>
+      ${f.recordError ? `<p class="small" style="color:var(--error); margin-top:8px;">No fue posible acceder al micrófono en este entorno. Usa el campo de texto para tu autorretrato.</p>` : ''}
+    </div>
+
+    <div class="card">
+      <span class="tag">Parte VI · Compromisos y preguntas que me llevo al Prácticum</span>
+      <label class="field-label">Tres compromisos concretos:</label>
+      ${[0,1,2].map(i=>`<input class="field-input line" type="text" value="${escapeHtml(f.commitments[i])}" oninput="updateFichaArr('commitments',${i},this.value)">`).join('')}
+      <label class="field-label" style="margin-top:10px;">Dos preguntas que quiero explorar en la rotación por centros educativos:</label>
+      ${[0,1].map(i=>`<input class="field-input line" type="text" value="${escapeHtml(f.questions[i])}" oninput="updateFichaArr('questions',${i},this.value)">`).join('')}
+    </div>
+
+    ${navRow(true,true)}
+  `;
+}
+
+/* ============================= CIERRE ============================= */
+
+function buildTextSummary(){
+  const f = state.ficha;
+  const lines = [];
+  lines.push('RESUMEN DEL SIMULADOR — AUTOCONOCIMIENTO Y VOCACIÓN DOCENTE');
+  lines.push('Universidad Pedagógica Nacional Francisco Morazán · Practicum I');
+  lines.push('');
+  lines.push('--- Casos guiados ---');
+  ["basic","intermediate","advanced"].forEach(k=>{
+    const c = CASES[k];
+    const ans = state.caseAnswers[k];
+    lines.push(c.title+': '+ans.filter(Boolean).length+'/'+ans.length+' aciertos');
+  });
+  lines.push('');
+  lines.push('--- Evaluación final (caso de Diego) ---');
+  lines.push(state.testAnswers.filter(Boolean).length+'/'+state.testAnswers.length+' aciertos');
+  lines.push('');
+  lines.push('--- Ficha de Trabajo Reflexiva ---');
+  lines.push('Momento/persona significativa: '+(f.bio1||'—'));
+  lines.push('Qué le enseñó sobre ser docente: '+(f.bio2||'—'));
+  lines.push('Emociones reconocidas: '+(f.emotions.length? f.emotions.join(', ') : '—'));
+  lines.push('Nivel de preparación percibido: '+f.readiness+'/5');
+  lines.push('Situaciones más desafiantes: '+(f.emoWhy||'—'));
+  lines.push('Motivaciones reconocidas: '+(f.motivations.length? f.motivations.join(', ') : '—'));
+  lines.push('Reflexión sobre motivos: '+(f.motivWhy||'—'));
+  lines.push('Influencia de mi forma de ser en otros: '+(f.identity1||'—'));
+  lines.push('Compromisos éticos: '+(f.identity2||'—'));
+  lines.push('Autorretrato profesional: '+(f.portrait||'—'));
+  lines.push('Compromisos concretos: '+f.commitments.filter(Boolean).join(' | ')||'—');
+  lines.push('Preguntas abiertas: '+f.questions.filter(Boolean).join(' | ')||'—');
+  lines.push('');
+  lines.push('--- Para compartir con un par o con el profesor de Prácticum ---');
+  lines.push(f.peer||'—');
+  return lines.join('\n');
+}
+function downloadTextSummary(){
+  const blob = new Blob([buildTextSummary()], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'resumen_autoconocimiento_vocacion.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '';
+  for(let n=0;n<words.length;n++){
+    const test = line + words[n] + ' ';
+    if(ctx.measureText(test).width > maxWidth && n>0){
+      ctx.fillText(line, x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  ctx.fillText(line, x, y);
+  return y + lineHeight;
+}
+
+function downloadVisualSummary(){
+  const canvas = document.createElement('canvas');
+  canvas.width = 800; canvas.height = 560;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#f7f4ec'; ctx.fillRect(0,0,800,560);
+  ctx.fillStyle = '#1c2b45'; ctx.fillRect(0,0,800,92);
+  ctx.fillStyle = '#b08833'; ctx.fillRect(0,88,800,4);
+  ctx.fillStyle = '#f4eedd'; ctx.font = "bold 22px Georgia";
+  ctx.fillText('Autoconocimiento y Vocación Docente', 30, 40);
+  ctx.font = "13px Arial"; ctx.fillStyle = '#cfc7ae';
+  ctx.fillText('UPNFM · Practicum I · Resumen de tu recorrido', 30, 65);
+
+  let y = 130;
+  ctx.font = "16px Arial"; ctx.fillStyle = '#24221d';
+  ["basic","intermediate","advanced"].forEach(k=>{
+    const c = CASES[k]; const ans = state.caseAnswers[k];
+    ctx.fillText(c.level+': '+ans.filter(Boolean).length+'/'+ans.length+' aciertos', 30, y);
+    y += 30;
+  });
+  y += 6;
+  ctx.fillText('Evaluación final: '+state.testAnswers.filter(Boolean).length+'/'+state.testAnswers.length+' aciertos', 30, y);
+  y += 34;
+
+  ctx.fillStyle = '#b08833'; ctx.fillRect(30, y, 740, 3);
+  y += 34;
+
+  ctx.fillStyle = '#5c5648'; ctx.font = "italic 14px Arial";
+  y = wrapCanvasText(ctx, 'La identidad docente es un proceso continuo: este resumen es un punto de partida, no un cierre.', 30, y, 740, 20);
+  y += 10;
+  if(state.ficha.portrait){
+    ctx.fillStyle = '#24221d'; ctx.font = "13px Arial";
+    y = wrapCanvasText(ctx, 'Autorretrato: ' + state.ficha.portrait.slice(0,220), 30, y, 740, 18);
+  }
+
+  const link = document.createElement('a');
+  link.download = 'tarjeta_resumen_autoconocimiento.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function renderCierre(){
+  return `
+    <div class="eyebrow">Cierre del simulador</div>
+    <h2>Tu recorrido, en un solo lugar</h2>
+    <p class="lead">Descarga un resumen de tu recorrido para guardarlo en tu Portafolio reflexivo, y
+    prepara lo que compartirás con un compañero o con tu profesor de Prácticum: el diálogo con otros
+    es, según la ventana de Johari, una de las vías más importantes para el autoconocimiento.</p>
+
+    <div class="result-grid">
+      ${["basic","intermediate","advanced"].map(k=>{
+        const c = CASES[k]; const ans = state.caseAnswers[k];
+        return `<div class="result-tile"><div class="n">${ans.filter(Boolean).length}/${ans.length}</div><div class="lbl">Caso ${c.level}</div></div>`;
+      }).join('')}
+      <div class="result-tile ok"><div class="n">${state.testAnswers.filter(Boolean).length}/${state.testAnswers.length}</div><div class="lbl">Evaluación final</div></div>
+    </div>
+
+    <div class="card">
+      <span class="tag">Para compartir con un par</span>
+      <label class="field-label">Escribe brevemente lo que te gustaría compartir sobre tu autoconocimiento y tu vocación docente:</label>
+      <textarea class="field-input" rows="3" oninput="updateFicha('peer', this.value)">${escapeHtml(state.ficha.peer)}</textarea>
+    </div>
+
+    <div class="btn-row" style="justify-content:flex-start; gap:12px; border-top:none; padding-top:0;">
+      <button class="btn" onclick="downloadTextSummary()">Descargar resumen (texto)</button>
+      <button class="btn ghost" onclick="downloadVisualSummary()">Descargar tarjeta visual (PNG)</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghost" onclick="back()">← Atrás</button>
+      <span></span>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
