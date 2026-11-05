@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador · Creencias Pedagógicas y su Influencia en la Práctica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#141f33; --navy-900:#1c2b45; --navy-800:#24365a; --navy-700:#324873;
+    --bronze:#b08833; --bronze-dark:#8f6c22;
+    --paper:#f7f4ec; --paper-2:#efe9db;
+    --ink:#24221d; --ink-soft:#5c5648; --line:#dad3c2;
+    --success:#3f7a4e; --success-bg:#e9f2ea;
+    --error:#a6423d; --error-bg:#f7eae9;
+    --radius-card:3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:'Source Serif 4',serif; margin:0; color:var(--navy-900); font-weight:600;}
+  p{margin:0 0 .9em 0;}
+  .app{max-width:900px;margin:0 auto; padding-bottom:64px;}
+
+  .institutional{background:linear-gradient(180deg,var(--navy-950),var(--navy-900)); color:#eee7d6; padding:22px 28px 20px; border-bottom:3px solid var(--bronze);}
+  .institutional .crest-row{display:flex; align-items:center; gap:14px;}
+  .crest{width:46px;height:46px;flex:0 0 auto;border-radius:50%; border:1.5px solid var(--bronze); display:flex;align-items:center;justify-content:center; font-family:'Source Serif 4',serif;font-weight:700;font-size:15px;color:var(--bronze); background:rgba(176,136,51,0.08);}
+  .institutional .lines{font-size:12.5px; letter-spacing:.2px; color:#cfc7ae;}
+  .institutional .lines strong{color:#f3ecd9; display:block; font-family:'Source Serif 4',serif; font-size:15.5px; font-weight:600; margin-bottom:1px;}
+  .institutional .lines span{display:block;}
+  .institutional .sim-title{margin-top:16px;}
+  .institutional .sim-title h1{color:#f7f3e6; font-size:23px; line-height:1.28;}
+  .institutional .sim-title .unidad{color:var(--bronze); font-size:13px; font-weight:600; margin-bottom:5px;}
+
+  .stepper{display:flex; background:var(--paper-2); border-bottom:1px solid var(--line); overflow-x:auto;}
+  .step-btn{flex:1 1 0; min-width:88px; text-align:left; background:none; border:none; cursor:pointer; padding:10px 9px 9px; color:var(--ink-soft); border-bottom:3px solid transparent; font-size:11px; transition:border-color .15s,color .15s;}
+  .step-btn .num{display:block; font-size:9.5px; color:var(--bronze-dark); font-weight:700; margin-bottom:2px;}
+  .step-btn.active{color:var(--navy-900); border-bottom-color:var(--bronze); font-weight:600;}
+  .step-btn.done{color:var(--navy-800);}
+  .step-btn:disabled{opacity:.42; cursor:not-allowed;}
+
+  .panel{padding:30px 28px 10px;}
+  .panel .eyebrow{font-size:12.5px; color:var(--bronze-dark); font-weight:600; margin-bottom:6px;}
+  .panel h2{font-size:22px; margin-bottom:14px;}
+  .lead{font-size:15.5px; color:var(--ink-soft); max-width:64ch;}
+
+  .card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-card); padding:18px 20px; margin-bottom:14px;}
+  .card h3{font-size:16.5px; margin-bottom:6px;}
+  .card .tag{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.3px; color:var(--bronze-dark); border:1px solid var(--bronze); border-radius:2px; padding:1px 7px; margin-bottom:10px;}
+  .card p{font-size:14.5px; color:var(--ink);}
+  .card p.small{font-size:13px; color:var(--ink-soft);}
+
+  abbr.gloss{border-bottom:1px dotted var(--bronze-dark); text-decoration:none; color:inherit; cursor:help;}
+
+  .audio-btn{font-size:12px; font-weight:600; border:1px solid var(--bronze); color:var(--bronze-dark); background:#fff; border-radius:14px; padding:4px 12px; cursor:pointer; display:inline-block; margin:2px 0 10px;}
+  .audio-btn:hover{background:var(--paper-2);}
+  .analogy-card .audio-btn{background:transparent; border-color:var(--bronze); color:var(--bronze); margin:0;}
+
+  details.theory{background:#fff; border:1px solid var(--line); border-left:3px solid var(--navy-800); margin-bottom:9px; border-radius:2px;}
+  details.theory summary{padding:12px 16px; cursor:pointer; font-family:'Source Serif 4',serif; font-weight:600; font-size:15.5px; color:var(--navy-900); list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  details.theory summary::-webkit-details-marker{display:none;}
+  details.theory summary::after{content:"+"; font-size:19px; color:var(--bronze-dark); font-weight:400;}
+  details.theory[open] summary::after{content:"–";}
+  details.theory .theory-body{padding:0 16px 16px; font-size:14.3px; color:var(--ink);}
+  details.theory .theory-body .authors{font-size:12.5px; color:var(--ink-soft); margin-top:8px; font-style:italic;}
+
+  .view-toggle{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .vt-btn{font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:14px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); cursor:pointer;}
+  .vt-btn.active{border-color:var(--navy-900); background:var(--navy-900); color:#f4eedd;}
+
+  .dimension-card{display:flex; gap:14px; align-items:flex-start; background:#fff; border:1px solid var(--line); border-left:4px solid var(--bronze); border-radius:2px; padding:14px 16px; margin-bottom:10px;}
+  .dimension-num{flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--navy-900); color:#f4eedd; font-family:'Source Serif 4',serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center;}
+  .dimension-card h4{font-size:14.5px; color:var(--navy-900); margin-bottom:3px;}
+  .dimension-card p{font-size:13.5px; color:var(--ink-soft); margin-bottom:0;}
+
+  .flow-grid{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:18px;}
+  .flow-box{background:#fff; border:1.5px solid var(--bronze); border-radius:6px; padding:10px 14px; font-size:13px; font-weight:600; color:var(--navy-900); text-align:center; min-width:110px;}
+  .flow-arrow{color:var(--bronze-dark); font-size:18px; padding:0 2px;}
+  .flow-break{flex-basis:100%; height:0;}
+
+  .timeline{position:relative; padding-left:22px; border-left:2px solid var(--line); margin-top:8px;}
+  .tl-item{position:relative; margin-bottom:24px;}
+  .tl-dot{position:absolute; left:-29px; top:5px; width:10px; height:10px; border-radius:50%; background:var(--bronze); box-shadow:0 0 0 3px var(--paper);}
+  .tl-item h3{font-size:15.5px; margin-bottom:4px;}
+  .tl-item .authors{font-size:12px; color:var(--ink-soft); font-style:italic;}
+
+  .analogy-card{background:var(--navy-900); color:#efe9d9; border-radius:var(--radius-card); padding:20px 22px; margin-bottom:14px; position:relative; overflow:hidden; display:flex; gap:16px; align-items:flex-start;}
+  .analogy-card::before{content:""; position:absolute; top:0; right:0; width:5px; height:100%; background:var(--bronze);}
+  .analogy-icon{width:54px; height:54px; flex:0 0 auto; margin-top:2px;}
+  .ic-shape{fill:none; stroke:var(--bronze); stroke-width:2;}
+  .ic-shape-dim{fill:none; stroke:var(--bronze); stroke-width:2; stroke-dasharray:3 3; opacity:.55;}
+  .ic-line{stroke:#efe9d9; stroke-width:2; fill:none; opacity:.8;}
+  .ic-dot{fill:var(--bronze); stroke:none;}
+  .analogy-text{flex:1; min-width:0;}
+  .analogy-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .analogy-card h3{color:#f4eddb; font-size:16.5px; margin-bottom:0;}
+  .analogy-card .concept{font-size:11.5px; color:var(--bronze); font-weight:600; letter-spacing:.3px; margin-bottom:9px;}
+  .analogy-card p{color:#d8d1bd; font-size:14.3px; margin-bottom:0; margin-top:8px;}
+
+  .scenario-box{background:var(--paper-2); border-left:3px solid var(--bronze); padding:16px 18px; margin-bottom:18px; border-radius:2px;}
+  .scenario-box .who{font-family:'Source Serif 4',serif; font-weight:600; color:var(--navy-900); font-size:15.5px; margin-bottom:5px;}
+  .scenario-box p{font-size:14.5px; margin-bottom:0; color:var(--ink);}
+
+  .question-block{margin-bottom:22px;}
+  .question-block .qtext{font-size:15px; font-weight:600; color:var(--navy-900); margin-bottom:10px; font-family:'Source Serif 4',serif;}
+  .option{display:flex; gap:10px; align-items:flex-start; padding:11px 14px; border:1px solid var(--line); border-radius:2px; margin-bottom:7px; cursor:pointer; background:#fff; transition:border-color .15s,background .15s;}
+  .option:hover{border-color:var(--navy-700);}
+  .option input{margin-top:3px; flex:0 0 auto;}
+  .option .otext{font-size:14px; color:var(--ink);}
+  .option.correct{border-color:var(--success); background:var(--success-bg);}
+  .option.incorrect{border-color:var(--error); background:var(--error-bg);}
+  .option.locked{cursor:default;}
+  .feedback-box{margin-top:8px; padding:12px 15px; border-radius:2px; font-size:13.8px; display:none;}
+  .feedback-box.show{display:block;}
+  .feedback-box.correct{background:var(--success-bg); border:1px solid var(--success); color:#274f31;}
+  .feedback-box.incorrect{background:var(--error-bg); border:1px solid var(--error); color:#6e2e2a;}
+  .feedback-box .verdict{font-weight:700; display:block; margin-bottom:3px; font-family:'Source Serif 4',serif; font-size:14.5px;}
+
+  .btn-row{display:flex; gap:10px; margin-top:22px; padding-top:16px; border-top:1px solid var(--line); justify-content:space-between; flex-wrap:wrap;}
+  .btn{font-size:13.5px; font-weight:600; padding:10px 20px; border-radius:2px; border:1px solid var(--navy-900); background:var(--navy-900); color:#f4eedd; cursor:pointer; transition:background .15s;}
+  .btn:hover{background:var(--navy-700);}
+  .btn.ghost{background:none; color:var(--navy-900); border:1px solid var(--line);}
+  .btn.ghost:hover{border-color:var(--navy-900);}
+  .btn.small{padding:6px 14px; font-size:12.5px;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  .route-row{display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;}
+
+  .breathing-wrap{display:flex; flex-direction:column; align-items:center; padding:26px 10px; margin-bottom:10px;}
+  .breathing-circle{width:110px; height:110px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #cfa24d, var(--bronze-dark)); animation:breathe 14s ease-in-out infinite; box-shadow:0 0 0 1px var(--bronze);}
+  @keyframes breathe{0%{transform:scale(.62);} 28%{transform:scale(1);} 57%{transform:scale(1);} 100%{transform:scale(.62);}}
+  .breathing-hint{margin-top:16px; font-size:13px; color:var(--ink-soft); text-align:center;}
+
+  .field-label{display:block; font-size:13px; font-weight:600; color:var(--navy-800); margin:12px 0 6px;}
+  .field-input{width:100%; font-family:'Inter'; font-size:13.8px; padding:9px 11px; border:1px solid var(--line); border-radius:2px; background:#fff; color:var(--ink); resize:vertical;}
+  .field-input.line{margin-bottom:8px;}
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+  .record-row{display:flex; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap;}
+  .record-row audio{max-width:100%;}
+
+  .final-summary{background:#fff; border:1px solid var(--line); border-radius:2px; padding:22px 24px; margin-bottom:16px;}
+  .final-summary .level{font-family:'Source Serif 4',serif; font-size:19px; color:var(--navy-900); margin-bottom:6px;}
+  .final-summary .bar-track{height:8px; background:var(--paper-2); border-radius:4px; overflow:hidden; margin:10px 0 16px;}
+  .final-summary .bar-fill{height:100%; background:var(--bronze);}
+
+  .result-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;}
+  .result-tile{border:1px solid var(--line); border-radius:2px; padding:14px 16px; background:#fff;}
+  .result-tile .n{font-family:'Source Serif 4',serif; font-size:26px; color:var(--navy-900);}
+  .result-tile .lbl{font-size:12px; color:var(--ink-soft);}
+  .result-tile.ok .n{color:var(--success);}
+
+  table.data-table{width:100%; border-collapse:collapse; margin-bottom:14px; font-size:13px;}
+  table.data-table th{background:var(--navy-900); color:#f4eedd; text-align:left; padding:9px 10px; font-size:12px;}
+  table.data-table td{border:1px solid var(--line); padding:9px 10px; vertical-align:top; background:#fff;}
+  table.data-table tr:nth-child(even) td{background:var(--paper-2);}
+  .info-table td, .info-table th{font-size:13px;}
+
+  .matrix-row{display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:8px; align-items:start;}
+  .matrix-row textarea{min-height:52px;}
+  .matrix-remove{background:none; border:1px solid var(--line); color:var(--error); border-radius:2px; padding:6px 10px; cursor:pointer; font-size:12px; height:fit-content;}
+  @media (max-width:640px){.matrix-row{grid-template-columns:1fr;}}
+
+  .rubric-mini{width:100%; font-size:12px; margin-top:6px; padding:6px 8px; border:1px solid var(--line); border-radius:2px; background:#fff;}
+
+  footer.note{padding:20px 28px 34px; font-size:12px; color:var(--ink-soft); border-top:1px solid var(--line); margin-top:8px;}
+
+  @media (max-width:600px){
+    .panel{padding:22px 16px 6px;}
+    .institutional{padding:18px 16px;}
+    .result-grid{grid-template-columns:1fr;}
+    .step-btn{min-width:74px; font-size:10px;}
+    .analogy-card{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* ============================= GLOSARIO ============================= */
+const GLOSSARY = {
+  "creencias tácitas": "Convicciones que el docente sostiene sin haberlas hecho explícitas, aunque guían su actuación.",
+  "currículo oculto": "Aprendizajes y normas no declaradas que se transmiten junto al currículo oficial.",
+  "constructos": "Categorías internas que una persona usa para interpretar la realidad.",
+  "sociocognitivo": "Relativo a cómo el pensamiento se forma a partir de la interacción social y la experiencia.",
+  "intención intrínseca": "Motivación que nace de la propia persona, no impuesta desde fuera.",
+  "crisis de los 40": "Etapa de replanteamiento personal y profesional asociada a la mitad de la carrera docente.",
+  "identidad profesional docente": "Proceso continuo de construir y responder quién es uno como docente."
+};
+function applyGlossary(text){
+  let out = text;
+  const terms = Object.keys(GLOSSARY).sort((a,b)=>b.length-a.length);
+  terms.forEach(term=>{
+    const escaped = term.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');
+    const re = new RegExp('\\b('+escaped+')\\b', 'i');
+    out = out.replace(re, function(match){
+      const def = GLOSSARY[term].replace(/"/g,'&quot;');
+      return '<abbr class="gloss" title="'+def+'">'+match+'</abbr>';
+    });
+  });
+  return out;
+}
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ============================= CONTENIDO TEÓRICO ============================= */
+const THEORY = [
+  {tag:"Impacto de las creencias", title:"Cómo las creencias moldean la práctica",
+   body:`Existe abundante literatura que muestra que las creencias de los docentes impactan
+   considerablemente sus percepciones y sus juicios, los cuales, a su vez, afectan su actuación en
+   el aula. Estos sistemas de creencias son una parte esencial para mejorar la formación profesional
+   y, por ende, la efectividad docente. Pueden ser influenciadas tanto por la formación profesional
+   como por la cultura y las teorías personales sobre la enseñanza-aprendizaje.`,
+   authors:"Biddle et al. (2000)"},
+  {tag:"Factores contextuales", title:"Lo que determina la práctica más allá de la creencia",
+   body:`Las prácticas pedagógicas también están determinadas por realidades sociales, psicológicas
+   y contextuales de la institución y del aula: los requerimientos de las autoridades, la
+   institución y la sociedad, los principios curriculares, la distribución de las aulas, las
+   políticas institucionales, los colegas, el uso de exámenes estandarizados, el estudiantado poco
+   motivado, un currículo rígido, los docentes con más antigüedad y la disponibilidad de recursos
+   didácticos. Estos factores pueden limitar la capacidad del docente para actuar de forma
+   coherente con lo que cree.`,
+   authors:"Andrews (2003); Bailey et al. (2001); Johnstone (1999); Maclellan y Soden (2003); Richards (2001)"},
+  {tag:"Condiciones laborales", title:"Cuando el entusiasmo choca con la organización",
+   body:`Las condiciones laborales difíciles pueden influir en lo que hace el docente y entrar en
+   conflicto con su forma de pensar. El entusiasmo inicial puede verse afectado por exigencias
+   organizacionales que escapan a su control, lo cual puede desincentivar la experimentación y la
+   innovación pedagógica, y promover la estrategia más segura de apegarse a los enfoques y
+   materiales ya prescritos.`,
+   authors:"Ver también Andrews (2003) y colaboradores"},
+  {tag:"Persistencia", title:"Creencias que se forman temprano y se resisten al cambio",
+   body:`Las creencias docentes se forman tempranamente y tienden a autoperpetuarse, persistiendo
+   frente a la contradicción que puedan causar el tiempo, la razón, la escolaridad o la experiencia.
+   Los procesos de pensamiento pueden ser, a la vez, precursores y creadores de esas creencias.`,
+   authors:"Introducción a la Unidad 2"},
+  {tag:"Definición (2.1)", title:"¿Qué son las creencias docentes?",
+   body:`Las creencias se definen como un sistema de <abbr class="gloss" title="Categorías internas que una persona usa para interpretar la realidad.">constructos</abbr>
+   que el docente usa cuando piensa, evalúa, clasifica y guía su actuación pedagógica. Responden casi
+   siempre al sentido común y son de naturaleza <abbr class="gloss" title="Convicciones que el docente sostiene sin haberlas hecho explícitas, aunque guían su actuación.">tácita</abbr>. Influyen en la
+   actuación docente más que los conocimientos disciplinarios que se poseen, y suelen estar bien
+   asentadas cuando el estudiantado llega a la universidad.`,
+   authors:"González et al. (2001); Scovel (2001)"},
+  {tag:"Función de filtro", title:"Las creencias como filtro del pensamiento",
+   body:`Las creencias están íntimamente relacionadas con lo que se cree que se sabe, pero además
+   ofrecen un filtro eficaz que discrimina, redefine, distorsiona o modifica el pensamiento y el
+   procesamiento posterior de la información. Las creencias del docente respecto a lo que es
+   enseñar afectan toda su actuación dentro del aula, sean estas creencias implícitas o explícitas.`,
+   authors:"González et al. (2001); Scovel (2001)"},
+  {tag:"El lado oculto (2.1.1)", title:"Lo que se actúa sin haberse pensado del todo",
+   body:`Aunque un docente actúe de forma espontánea o por costumbre, sin pensar conscientemente en
+   la acción, dicha actuación surge de una creencia profundamente enraizada que puede que nunca se
+   haya explicitado. Esas creencias sobre cómo se aprende impregnan las actuaciones en el aula más
+   que el método concreto que se esté obligado a adoptar o el texto que se utilice. Por eso, estudiar
+   las creencias del docente implica explorar el lado oculto de la enseñanza.`,
+   authors:"Richards (1999); Roberts (2002); Tsui (2003)"},
+  {tag:"Dos procesos sociocognitivos", title:"Aprender a enseñar y saber qué hacer",
+   body:`La formación de creencias se sustenta en dos procesos <abbr class="gloss" title="Relativo a cómo el pensamiento se forma a partir de la interacción social y la experiencia.">sociocognitivos</abbr> interrelacionados.
+   El primero examina el aprendizaje del docente: cómo aprende a enseñar. El segundo, de carácter más
+   epistemológico, es el conocimiento docente: cómo sabe lo que debe hacer para hacer lo que hace. Es
+   difícil conceptualizar cómo aprenden los docentes sin alguna noción de qué es exactamente lo que
+   están aprendiendo.`,
+   authors:"Introducción a la Unidad 2"},
+  {tag:"Cambio y trayectoria", title:"Un cambio que ocurre en dos planos a la vez",
+   body:`Durante toda la carrera profesional del docente se producen cambios, no solo en el plano
+   profesional sino también en el personal. Ambos planos se influyen mutuamente y de manera
+   continua, modificando las formas de pensar y de entender tanto la vida personal como la
+   profesional. Por eso las creencias son difíciles de modificar: los cambios se dan a lo largo de
+   toda la carrera, mediante distintas interpretaciones asociadas al desarrollo personal.`,
+   authors:"Fernández Cruz (1995)"},
+  {tag:"Influencias externas", title:"Lo que además de los cambios influye en el docente",
+   body:`Además de los cambios mismos, el docente está influenciado por la familia, su propia
+   disposición individual, la regulación organizativa del centro, los estilos de dirección, las
+   expectativas sociales y la organización profesional a la que pertenece. Cambios e influencias
+   determinan, en distinta medida, las fases del ciclo de vida profesional del docente.`,
+   authors:"Fressler (1985)"},
+  {tag:"Condiciones para el cambio", title:"Qué hace posible transformar una creencia",
+   body:`Para que se produzcan cambios en las creencias en cualquiera de las etapas de la carrera,
+   se necesita una <abbr class="gloss" title="Motivación que nace de la propia persona, no impuesta desde fuera.">intención intrínseca</abbr>
+   y una necesidad real de modificar lo ya existente: las teorías, visiones, pasiones,
+   preocupaciones, la personalidad y las creencias formativas dan al docente la posibilidad de
+   desarrollar su capacidad de elección. La superación de los modelos de enseñanza tradicionales
+   vendrá generada por un cambio en las creencias formativas, y ese cambio deberá responder a las
+   necesidades educativas que la sociedad plantea a los docentes.`,
+   authors:"Estepa (2000); Beattie (2001); Quinlan (1999)"}
+];
+
+const DIMENSIONS = [
+  {title:"El cambio como formación", body:"El cambio es algo realizado por el propio profesor."},
+  {title:"El cambio como adaptación", body:"El profesor cambia como respuesta a alguna circunstancia."},
+  {title:"El cambio como desarrollo personal", body:"El profesor produce modificaciones en sus habilidades o estrategias."},
+  {title:"El cambio como reforma local", body:"Se cambia algo por razones de crecimiento personal."},
+  {title:"El cambio como reestructuración sistemática", body:"Los profesores representan en sí mismos las modificaciones políticas del sistema."},
+  {title:"El cambio como crecimiento o aprendizaje", body:"La actividad profesional produce inevitablemente cambios en el docente."}
+];
+
+const ETAPAS_FLOW = ["Inducción","Crecimiento","Gestión","Idealismo","Orientación personal","Estabilidad y estancamiento","Carrera profesional"];
+
+const NARRATIVA_ETAPAS = [
+  {title:"Etapa inicial: el choque con la realidad",
+   body:`Hay una reorientación de la carrera hacia los objetivos que la realidad educativa plantea,
+   rodeada de las inquietudes propias del principiante y de las dudas que produce el choque con esa
+   realidad. Las creencias en esta etapa están determinadas por sentimientos contradictorios que
+   pueden modificarse a medida que el docente llega a la etapa de estabilización profesional.`},
+  {title:"Segunda etapa: reafirmarse como docente",
+   body:`La información que el docente recibe puede ser contraria a la que ya posee, y se enfrenta a
+   la realidad de las aulas y de toda la institución educativa. Se produce un crecimiento personal y
+   profesional que genera la construcción de la propia identidad y supone reafirmarse como docente,
+   produciendo nuevas creencias formativas a la vez que las ideas previas se asientan.`,
+   authors:"Vega e Isidro (1997); Segal (1998); Fernández Cruz (1994)"},
+  {title:"Etapa de profesionalismo: la 'crisis de los 40'",
+   body:`Esta etapa suele coincidir con la crisis de los 40, en la que nuevas dudas e inquietudes
+   producen sentimientos contradictorios y un replanteamiento no solo de la profesión sino de todos
+   los ámbitos de la vida. Influyen aquí la tensión vivida en el centro educativo, un fuerte
+   currículo oculto, la falta de formación específica en algunas áreas, las escasas relaciones con
+   los compañeros, el propio crecimiento profesional y personal, el autoconocimiento, la imagen que
+   se posee de la enseñanza, y las necesidades sentidas —aunque no expresadas— del proceso de cambio
+   de las creencias formativas.`,
+   authors:"Dewitt et al. (1998); Schoonmaker (1998)"},
+  {title:"Último período: transmitir la experiencia",
+   body:`Se transita entre sentimientos contradictorios, en los que a veces prevalecen más los
+   intereses personales que los profesionales, además de dudas producidas por la experiencia y por
+   la nueva situación profesional que se avecina. El profesor, ya experto, transmite su experiencia y
+   provoca en otros docentes nuevas creencias, además de dotarlos de elementos necesarios para
+   cambiar las que ya tienen.`}
+];
+
+const ANALOGIES = [
+  {concept:"Creencias como filtro perceptivo", title:"Los lentes con los que miramos el aula",
+   body:`Nadie ve el mundo "en crudo": lo vemos a través de lentes que discriminan, aclaran o
+   distorsionan lo que percibimos. Las creencias docentes funcionan igual: no son un dato adicional
+   sobre la enseñanza, son el lente a través del cual se interpreta cada situación de aula, incluso
+   antes de pensar conscientemente en ella.`},
+  {concept:"Currículo oculto", title:"El mapa que va debajo del mapa",
+   body:`Todo centro educativo tiene un mapa oficial —el currículo, los horarios, las normas
+   escritas— y, debajo de ese mapa, otro que nadie dibuja pero que todos terminan aprendiendo a leer:
+   qué se premia en realidad, qué se calla, qué se espera sin decirlo. Cartografiar la propia
+   incertidumbre como docente en formación es, en parte, aprender a leer ese segundo mapa.`},
+  {concept:"Creencia enraizada", title:"La raíz que sostiene el árbol visible",
+   body:`Lo que se ve de un árbol es apenas la mitad de la historia: la raíz, invisible bajo tierra,
+   es la que decide cuánto puede crecer y hacia dónde. Una creencia muy enraizada actúa igual: rara
+   vez se explicita, pero sostiene —o limita— cada decisión visible que se toma frente al grupo.`},
+  {concept:"Ciclo profesional docente", title:"Las estaciones de una carrera",
+   body:`Una carrera docente no es una línea recta: tiene estaciones, como el año. Hay una etapa de
+   siembra llena de idealismo, una de crecimiento vigoroso, una de estabilidad que a veces se vuelve
+   estancamiento, y una de cosecha en la que la experiencia se transmite a otros. Ninguna estación es
+   un error; cada una cumple una función distinta en el ciclo completo.`}
+];
+
+const ANALOGY_ICONS = [
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><circle cx="18" cy="34" r="13" class="ic-shape"/><circle cx="46" cy="34" r="13" class="ic-shape"/><line x1="31" y1="34" x2="33" y2="34" class="ic-line"/><line x1="5" y1="30" x2="1" y2="26" class="ic-line"/><line x1="59" y1="30" x2="63" y2="26" class="ic-line"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><rect x="9" y="15" width="34" height="26" rx="2" class="ic-shape-dim" transform="rotate(-8 26 28)"/><rect x="19" y="22" width="34" height="26" rx="2" class="ic-shape"/><path d="M23 30 L31 34 L39 28 L47 36" class="ic-line"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><circle cx="32" cy="12" r="9" class="ic-shape"/><line x1="32" y1="20" x2="32" y2="38" class="ic-shape"/><path d="M32 38 L20 52 M32 38 L44 52 M32 38 L32 56" class="ic-line"/></svg>`,
+  `<svg viewBox="0 0 64 64" class="analogy-icon"><circle cx="32" cy="32" r="18" class="ic-shape"/><circle cx="32" cy="14" r="3" class="ic-dot"/><circle cx="50" cy="32" r="3" class="ic-dot"/><circle cx="32" cy="50" r="3" class="ic-dot"/><circle cx="14" cy="32" r="3" class="ic-dot"/></svg>`
+];
+
+function Q(prompt, options){ return {prompt, options}; }
+
+const QUIZ = [
+  Q("Según Biddle et al. (2000), ¿qué efecto tienen las creencias de los docentes?",[
+    {text:"Impactan sus percepciones y juicios, que a su vez afectan su actuación en el aula.", correct:true,
+     feedback:"Correcto. Las creencias no son un dato aislado: moldean cómo se percibe una situación y el juicio que se hace de ella, lo que termina afectando la actuación docente."},
+    {text:"Solo afectan el manejo de los conocimientos disciplinarios, sin relación con la práctica.", correct:false,
+     feedback:"Las creencias influyen precisamente en la actuación en el aula, no solo en el dominio de contenidos disciplinarios."},
+    {text:"No tienen relación demostrable con la práctica docente cotidiana.", correct:false,
+     feedback:"La literatura citada muestra justamente lo contrario: un impacto considerable de las creencias sobre percepciones, juicios y actuación."}
+  ]),
+  Q("¿Cuál de los siguientes es un factor contextual que, según la literatura citada, puede limitar que el docente actúe según sus creencias?",[
+    {text:"Un currículo rígido y el uso de exámenes estandarizados.", correct:true,
+     feedback:"Correcto. Ambos aparecen explícitamente entre los factores contextuales —junto a políticas institucionales, colegas y recursos disponibles— que condicionan la práctica pedagógica."},
+    {text:"El color con que está pintada el aula.", correct:false,
+     feedback:"Este factor no aparece en la literatura citada; los factores señalados son de tipo curricular, institucional y social, no decorativo."},
+    {text:"El signo zodiacal del docente.", correct:false,
+     feedback:"No es un factor contextual reconocido en la literatura sobre creencias y práctica docente."}
+  ]),
+  Q("¿Qué efecto pueden tener las condiciones laborales difíciles sobre la práctica pedagógica?",[
+    {text:"Pueden desincentivar la experimentación y la innovación, favoreciendo apegarse a enfoques ya prescritos.", correct:true,
+     feedback:"Correcto. El entusiasmo inicial puede verse afectado por exigencias organizacionales fuera del control del docente, empujándolo hacia la opción más segura y conocida."},
+    {text:"No tienen ninguna relación con la forma en que el docente enseña.", correct:false,
+     feedback:"El texto muestra evidencia de que sí influyen, entrando incluso en conflicto con la cognición del docente."},
+    {text:"Siempre aumentan la innovación pedagógica del docente.", correct:false,
+     feedback:"El efecto documentado es el opuesto: tienden a desincentivar la experimentación, no a fomentarla."}
+  ]),
+  Q("¿Qué caracteriza a las creencias docentes en cuanto a su formación y persistencia?",[
+    {text:"Se forman tempranamente y tienden a autoperpetuarse, resistiendo el tiempo, la razón, la escolaridad o la experiencia.", correct:true,
+     feedback:"Correcto. Esa persistencia es justamente lo que hace tan relevante hacerlas conscientes durante la formación docente."},
+    {text:"Se forman solo durante la formación universitaria y desaparecen fácilmente con nueva información.", correct:false,
+     feedback:"Ocurre lo contrario: se forman tempranamente —antes de la universidad— y son difíciles de modificar aunque aparezca información contradictoria."},
+    {text:"Cambian automáticamente cada vez que el docente adquiere más experiencia.", correct:false,
+     feedback:"La experiencia por sí sola no garantiza el cambio; las creencias pueden persistir pese a la experiencia acumulada."}
+  ]),
+  Q("Según la definición de la Unidad 2, el sistema de creencias del docente es:",[
+    {text:"Un sistema de constructos, de naturaleza tácita y de sentido común, que el docente usa para pensar, evaluar, clasificar y guiar su actuación.", correct:true,
+     feedback:"Correcto. Y este sistema influye en la actuación docente más que los conocimientos disciplinarios que la persona posee."},
+    {text:"Un conjunto de técnicas de enseñanza aprendidas formalmente en la universidad.", correct:false,
+     feedback:"Las creencias no son técnicas aprendidas; son constructos tácitos, muchas veces de sentido común, previos a la formación formal."},
+    {text:"Un documento oficial que cada docente debe redactar al iniciar su carrera.", correct:false,
+     feedback:"No se trata de un documento formal, sino de un sistema interno y en gran parte implícito."}
+  ]),
+  Q("¿Qué función cumplen las creencias como 'filtro' frente a la información nueva?",[
+    {text:"Discriminan, redefinen, distorsionan o modifican el pensamiento y el procesamiento posterior de la información.", correct:true,
+     feedback:"Correcto. Por eso dos docentes pueden observar la misma situación de aula y procesarla de forma distinta, según el filtro de creencias con el que la interpretan."},
+    {text:"Aseguran que toda la información nueva se procese de forma neutral y objetiva.", correct:false,
+     feedback:"Es justamente lo contrario: el filtro de creencias hace que el procesamiento no sea neutral."},
+    {text:"Solo afectan la información explícita, nunca las actuaciones espontáneas.", correct:false,
+     feedback:"Las creencias afectan toda la actuación en el aula, tanto si son implícitas como explícitas."}
+  ]),
+  Q("Según Richards, Roberts y Tsui, estudiar las creencias del docente implica principalmente:",[
+    {text:"Explorar el 'lado oculto' de la enseñanza.", correct:true,
+     feedback:"Correcto. Muchas actuaciones espontáneas surgen de creencias enraizadas que nunca se han hecho explícitas; estudiarlas es hacer visible ese lado oculto."},
+    {text:"Memorizar el currículo oficial de la asignatura que se imparte.", correct:false,
+     feedback:"El currículo oficial es solo una parte visible; las creencias pertenecen al lado no explícito de la práctica."},
+    {text:"Evaluar exclusivamente el desempeño observable del docente en el aula.", correct:false,
+     feedback:"Estudiar creencias va más allá de lo observable: busca lo que sostiene esas conductas, muchas veces invisible incluso para quien las tiene."}
+  ]),
+  Q("¿Cuáles son los dos procesos sociocognitivos que sustentan la formación de las creencias docentes?",[
+    {text:"El aprendizaje del docente (cómo aprende a enseñar) y el conocimiento docente (cómo sabe lo que debe hacer).", correct:true,
+     feedback:"Correcto. Ambos procesos están interrelacionados: es difícil entender cómo aprenden los docentes sin alguna noción de qué es lo que están aprendiendo."},
+    {text:"La planificación de clases y la calificación de exámenes.", correct:false,
+     feedback:"Estas son tareas del ejercicio docente, no los procesos sociocognitivos que sustentan la formación de creencias."},
+    {text:"La selección de libros de texto y el diseño del aula física.", correct:false,
+     feedback:"No corresponden a los procesos sociocognitivos descritos en la Unidad 2."}
+  ]),
+  Q("¿Cuál de las siguientes NO corresponde a una de las seis dimensiones del cambio en las creencias docentes (Fernández Cruz, 1995)?",[
+    {text:"El cambio como imposición externa obligatoria, ajena por completo a la voluntad del docente.", correct:true,
+     feedback:"Correcto: esta no aparece entre las seis dimensiones. Las seis son formación, adaptación, desarrollo personal, reforma local, reestructuración sistemática y crecimiento o aprendizaje; todas involucran, en algún grado, al propio docente."},
+    {text:"El cambio como desarrollo personal, con modificaciones en habilidades o estrategias.", correct:false,
+     feedback:"Esta sí es una de las seis dimensiones descritas."},
+    {text:"El cambio como crecimiento o aprendizaje, que la actividad profesional produce inevitablemente.", correct:false,
+     feedback:"Esta también es una de las seis dimensiones descritas."}
+  ]),
+  Q("La etapa de 'profesionalismo', que suele coincidir con la crisis de los 40, está influida principalmente por:",[
+    {text:"La tensión vivida en el centro educativo, el currículo oculto, la falta de formación específica y el propio autoconocimiento.", correct:true,
+     feedback:"Correcto. Esta etapa produce un replanteamiento que va más allá de lo profesional y toca distintos ámbitos de la vida del docente."},
+    {text:"Únicamente el salario que recibe el docente en ese momento de su carrera.", correct:false,
+     feedback:"El salario no aparece como el factor central de esta etapa; los factores descritos son más bien identitarios, relacionales y contextuales."},
+    {text:"La cantidad de años que faltan para la jubilación, sin relación con las creencias formativas.", correct:false,
+     feedback:"Esta etapa sí se relaciona con las creencias formativas: es quizás el momento de mayor replanteamiento de todo el ciclo profesional."}
+  ]),
+  Q("Según Beattie (2001) y Quinlan (1999), ¿qué es necesario para superar los modelos de enseñanza tradicionales?",[
+    {text:"Un cambio en las creencias formativas del docente, apoyado en su capacidad de elección.", correct:true,
+     feedback:"Correcto. Las teorías, visiones, pasiones, preocupaciones, personalidad y creencias formativas del docente le dan la posibilidad de desarrollar esa capacidad de elección."},
+    {text:"Un cambio exclusivamente en el currículo oficial, sin que el docente participe.", correct:false,
+     feedback:"El cambio descrito parte del propio docente y su capacidad de elección, no de una reforma curricular externa."},
+    {text:"La eliminación completa de la formación inicial docente.", correct:false,
+     feedback:"No se plantea eliminar la formación inicial, sino transformar las creencias formativas que la sostienen."}
+  ])
+];
+
+const PAUSAS = {
+  pausa1:{
+    title:"Antes de escribir tu Acción reflexiva",
+    lead:"Vas a explorar creencias que quizás nunca habías puesto en palabras. Tómate unos segundos antes de empezar.",
+    why:"Las creencias más enraizadas suelen ser tácitas; nombrarlas con calma, sin presión, ayuda a que emerjan con más honestidad que si se escriben de prisa."
+  }
+};
+
+/* ============================= ESTADO ============================= */
+const STEPS = [
+  {id:"portada", label:"Portada"},
+  {id:"teoria", label:"Marco teórico"},
+  {id:"dimensiones", label:"Dimensiones"},
+  {id:"etapas", label:"Etapas"},
+  {id:"analogias", label:"Analogías"},
+  {id:"prueba", label:"Prueba"},
+  {id:"pausa1", label:"Pausa"},
+  {id:"reflexion", label:"Acción reflexiva"},
+  {id:"bitacora", label:"Bitácora"},
+  {id:"cierre", label:"Cierre"}
+];
+
+function initState(){
+  return {
+    current:0, furthest:0,
+    theoryView:'accordion', etapasView:'flujo',
+    student:{ name:"", registro:"", carrera:"" },
+    quizAnswers:[],
+    reflexion:{ q1:"", q2:"", q3:"", recording:false, audioUrl:null, recordError:false },
+    bitacora:{
+      item1:"",
+      beliefs:["","",""],
+      matrix:[{belief:"", tension:""}],
+      targetBelief:"", plan1:"", plan2:"",
+      plenariaDone:false,
+      rubric:{ident:"", tension:"", compromiso:""}
+    },
+    peer:""
+  };
+}
+let state = initState();
+window.__lastQuizChoice = {};
+window.__speakingBtn = null;
+let mediaRecorder = null;
+let audioChunks = [];
+
+function goTo(idx){ if(idx>state.furthest) return; state.current=idx; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+function advance(){ if(state.current<STEPS.length-1){ state.current+=1; if(state.current>state.furthest) state.furthest=state.current; render(); window.scrollTo({top:0,behavior:"smooth"}); } }
+function back(){ if(state.current>0){ state.current-=1; render(); window.scrollTo({top:0,behavior:"smooth"}); } }
+function startRoute(id){ const idx=STEPS.findIndex(s=>s.id===id); if(idx<0) return; state.current=idx; if(idx>state.furthest) state.furthest=idx; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+function tryStartRoute(id){
+  if(!state.student.name || !state.student.name.trim()){
+    const inp = document.getElementById('student-name-input');
+    if(inp){ inp.focus(); inp.style.borderColor='var(--error)'; }
+    alert('Antes de iniciar, escribe tu nombre completo.');
+    return;
+  }
+  startRoute(id);
+}
+
+/* ============================= AUDIO (TTS) ============================= */
+function speakText(btnId, text){
+  if(!('speechSynthesis' in window)){ alert('Tu navegador no permite lectura en voz alta en este momento.'); return; }
+  const btn = document.getElementById(btnId);
+  if(window.__speakingBtn === btnId){
+    speechSynthesis.cancel(); window.__speakingBtn=null;
+    if(btn) btn.textContent = btn.dataset.label || '🔊 Escuchar';
+    return;
+  }
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text.replace(/\s+/g,' ').trim());
+  utter.lang='es-ES'; utter.rate=0.98;
+  utter.onend = function(){ window.__speakingBtn=null; if(btn) btn.textContent = btn.dataset.label || '🔊 Escuchar'; };
+  window.__speakingBtn = btnId;
+  if(btn){ btn.dataset.label = btn.textContent; btn.textContent='⏸ Detener'; }
+  speechSynthesis.speak(utter);
+}
+function speakTheory(i){ const t=THEORY[i]; speakText('audio-theory-'+i, t.title+'. '+t.body.replace(/<[^>]+>/g,'')); }
+function speakAnalogy(i){ const a=ANALOGIES[i]; speakText('audio-an-'+i, a.title+'. '+a.body); }
+function speakNarrativa(i){ const n=NARRATIVA_ETAPAS[i]; speakText('audio-nar-'+i, n.title+'. '+n.body); }
+function speakReflexionPrompts(){
+  speakText('audio-reflexion', 'Pregunta uno. Qué ideas sobre la enseñanza tenías al comenzar el Prácticum Docente. Pregunta dos. Qué aspectos de lo observado te han generado conflicto, inquietud o desafío al enfrentarte al centro educativo. Pregunta tres. Cómo lo experimentado en el centro educativo ha impactado en tus emociones.');
+}
+
+/* ============================= RENDER ============================= */
+function render(){
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    ${renderHeader()}
+    ${renderStepper()}
+    <div class="panel">${renderPanel()}</div>
+    <footer class="note">Practicum I · Construcción de la Identidad Profesional — Unidad 2: Creencias pedagógicas y su influencia en la práctica. Simulador de apoyo formativo.</footer>
+  `;
+}
+function renderHeader(){
+  return `
+  <div class="institutional">
+    <div class="crest-row">
+      <div class="crest">UP</div>
+      <div class="lines">
+        <strong>Universidad Pedagógica Nacional Francisco Morazán</strong>
+        <span>Facultad de Ciencias Básicas</span>
+        <span>Departamento de Educación Comercial</span>
+        <span>Asignatura: Practicum I · Dr. José Raúl Castillo Rosales</span>
+        ${state.student.name && state.student.name.trim() ? `<span>Estudiante: ${escapeHtml(state.student.name)}</span>` : ''}
+      </div>
+    </div>
+    <div class="sim-title">
+      <div class="unidad">Unidad 2 — Simulador formativo</div>
+      <h1>Creencias pedagógicas y su influencia en la práctica</h1>
+    </div>
+  </div>`;
+}
+function renderStepper(){
+  return `<div class="stepper">
+    ${STEPS.map((s,i)=>`
+      <button class="step-btn ${i===state.current?'active':''} ${i<state.current?'done':''}"
+        ${i>state.furthest?'disabled':''} onclick="goTo(${i})">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>${s.label}
+      </button>`).join('')}
+  </div>`;
+}
+function renderPanel(){
+  const id = STEPS[state.current].id;
+  if(id==="portada") return renderPortada();
+  if(id==="teoria") return renderTeoria();
+  if(id==="dimensiones") return renderDimensiones();
+  if(id==="etapas") return renderEtapas();
+  if(id==="analogias") return renderAnalogias();
+  if(id==="prueba") return renderPrueba();
+  if(id==="pausa1") return renderPausa();
+  if(id==="reflexion") return renderReflexion();
+  if(id==="bitacora") return renderBitacora();
+  if(id==="cierre") return renderCierre();
+}
+
+function navRow(showBack, nextEnabled){
+  return `<div class="btn-row">
+    ${showBack ? `<button class="btn ghost" onclick="back()">← Atrás</button>` : `<span></span>`}
+    <button class="btn" ${nextEnabled?'':'disabled'} onclick="advance()">Continuar →</button>
+  </div>`;
+}
+
+/* ---------- Portada ---------- */
+function renderPortada(){
+  const s = state.student;
+  return `
+    <div class="eyebrow">Bienvenida al simulador</div>
+    <h2>Lo que crees sobre enseñar ya está actuando, aunque no lo hayas dicho</h2>
+    <p class="lead">Este simulador acompaña la Unidad 2 del Prácticum I. Recorrerás el marco teórico
+    completo sobre creencias pedagógicas, las dimensiones y etapas de su cambio, analogías, una
+    prueba de conocimientos, una Acción reflexiva a partir de la actividad integradora
+    <em>«Cartografías de la incertidumbre»</em>, y la Bitácora de Transformación Pedagógica.</p>
+
+    <div class="card">
+      <span class="tag">Propósito de la unidad</span>
+      <p class="small">Que el futuro docente reconozca sus creencias sobre la enseñanza, identificando
+      las tensiones que surgen al contrastarlas con la realidad educativa, para asumir
+      progresivamente su transformación a lo largo de su proceso de formación.</p>
+    </div>
+
+    <div class="card">
+      <span class="tag">Antes de iniciar</span>
+      <label class="field-label" style="margin-top:0;">Nombre completo del estudiante:</label>
+      <input id="student-name-input" class="field-input line" type="text" placeholder="Escribe tu nombre completo"
+        value="${escapeHtml(s.name)}" oninput="state.student.name=this.value">
+      <label class="field-label">No. de registro:</label>
+      <input class="field-input line" type="text" placeholder="Ej. 20211000000" value="${escapeHtml(s.registro)}" oninput="state.student.registro=this.value">
+      <label class="field-label">Carrera:</label>
+      <input class="field-input line" type="text" placeholder="Escribe tu carrera" value="${escapeHtml(s.carrera)}" oninput="state.student.carrera=this.value">
+      <p class="small" style="margin-bottom:0; margin-top:6px;">Estos datos se usarán para completar
+      automáticamente tu Bitácora de Transformación Pedagógica al final del recorrido.</p>
+    </div>
+
+    <p class="lead" style="margin-top:18px;">Elige por dónde empezar:</p>
+    <div class="route-row">
+      <button class="btn" onclick="tryStartRoute('teoria')">Explorar la teoría primero →</button>
+      <button class="btn ghost" onclick="tryStartRoute('prueba')">Ir directo a la prueba →</button>
+    </div>
+  `;
+}
+
+/* ---------- Teoría ---------- */
+function renderTeoria(){
+  const view = state.theoryView;
+  return `
+    <div class="eyebrow">Marco teórico</div>
+    <h2>Fundamentos sobre las creencias pedagógicas</h2>
+    <p class="lead">Los términos con línea punteada tienen una definición breve al pasar el cursor
+    (o al mantener presionado en móvil). Cada apartado se puede escuchar.</p>
+    <div class="view-toggle">
+      <button class="vt-btn ${view==='accordion'?'active':''}" onclick="setTheoryView('accordion')">Acordeón por tema</button>
+    </div>
+    ${THEORY.map((t,i)=>`
+      <details class="theory">
+        <summary><span>${t.title}</span></summary>
+        <div class="theory-body">
+          <span class="tag">${t.tag}</span><br>
+          <button class="audio-btn" id="audio-theory-${i}" onclick="speakTheory(${i})">🔊 Escuchar</button>
+          <p>${applyGlossary(t.body)}</p>
+          <p class="authors">${t.authors}</p>
+        </div>
+      </details>
+    `).join('')}
+    ${navRow(true,true)}
+  `;
+}
+function setTheoryView(v){ state.theoryView=v; render(); }
+
+/* ---------- Dimensiones del cambio ---------- */
+function renderDimensiones(){
+  return `
+    <div class="eyebrow">Figura 1</div>
+    <h2>Seis dimensiones del cambio en las creencias docentes</h2>
+    <p class="lead">Estas interpretaciones abarcan las distintas formas en que un docente puede
+    reestructurar su sistema de creencias a lo largo de su ciclo vital profesional.</p>
+    ${DIMENSIONS.map((d,i)=>`
+      <div class="dimension-card">
+        <div class="dimension-num">${i+1}</div>
+        <div>
+          <h4>${d.title}</h4>
+          <p>${applyGlossary(d.body)}</p>
+        </div>
+      </div>
+    `).join('')}
+    <div class="card">
+      <span class="tag">Para tener presente</span>
+      <p class="small">Ninguna de estas seis formas de cambio es "más válida" que otra: conviene
+      identificar cuál se parece más a lo que te está pasando a ti en este momento del Prácticum.</p>
+    </div>
+    ${navRow(true,true)}
+  `;
+}
+
+/* ---------- Etapas del desarrollo ---------- */
+function renderEtapas(){
+  const view = state.etapasView;
+  return `
+    <div class="eyebrow">Figura 2 · 2.2 Etapas de las creencias en el desarrollo profesional</div>
+    <h2>Cómo cambian las creencias a lo largo de la carrera docente</h2>
+    <p class="lead">Kremer-Hayon y Fessler (1992) describen siete estadios del desarrollo del
+    profesor. El texto de la unidad, además, narra el ciclo profesional en cuatro momentos amplios.</p>
+    <div class="view-toggle">
+      <button class="vt-btn ${view==='flujo'?'active':''}" onclick="setEtapasView('flujo')">Los siete estadios</button>
+      <button class="vt-btn ${view==='narrativa'?'active':''}" onclick="setEtapasView('narrativa')">Narrativa del ciclo</button>
+    </div>
+    ${view==='flujo' ? renderEtapasFlujo() : renderEtapasNarrativa()}
+    ${navRow(true,true)}
+  `;
+}
+function setEtapasView(v){ state.etapasView=v; render(); }
+function renderEtapasFlujo(){
+  return `
+    <div class="flow-grid">
+      ${ETAPAS_FLOW.map((e,i)=>`
+        <div class="flow-box">${e}</div>
+        ${i<ETAPAS_FLOW.length-1 ? `<span class="flow-arrow">→</span>` : ''}
+      `).join('')}
+    </div>
+    <div class="card">
+      <span class="tag">Modelo de crecimiento profesional</span>
+      <p class="small">Estos estadios están pensados dentro de un modelo centrado en el crecimiento
+      profesional del docente: representan cambios en la calidad y competencia profesional, antes
+      que en la cantidad o el contenido concreto del comportamiento docente.</p>
+    </div>
+  `;
+}
+function renderEtapasNarrativa(){
+  return NARRATIVA_ETAPAS.map((n,i)=>`
+    <details class="theory" ${i===0?'open':''}>
+      <summary><span>${n.title}</span></summary>
+      <div class="theory-body">
+        <button class="audio-btn" id="audio-nar-${i}" onclick="speakNarrativa(${i})">🔊 Escuchar</button>
+        <p>${applyGlossary(n.body)}</p>
+        ${n.authors? `<p class="authors">${n.authors}</p>` : ''}
+      </div>
+    </details>
+  `).join('');
+}
+
+/* ---------- Analogías ---------- */
+function renderAnalogias(){
+  return `
+    <div class="eyebrow">Analogías</div>
+    <h2>Cuatro imágenes para sostener los conceptos</h2>
+    <p class="lead">Cada analogía combina un icono, texto y audio. Vuelve a ellas si necesitas
+    recordar un concepto durante la prueba o la Bitácora.</p>
+    ${ANALOGIES.map((a,i)=>`
+      <div class="analogy-card">
+        ${ANALOGY_ICONS[i]}
+        <div class="analogy-text">
+          <div class="concept">${a.concept}</div>
+          <div class="analogy-head">
+            <h3>${a.title}</h3>
+            <button class="audio-btn" id="audio-an-${i}" onclick="speakAnalogy(${i})">🔊</button>
+          </div>
+          <p>${applyGlossary(a.body)}</p>
+        </div>
+      </div>
+    `).join('')}
+    ${navRow(true,true)}
+  `;
+}
+
+/* ---------- Prueba de conocimientos ---------- */
+function renderPrueba(){
+  const answers = state.quizAnswers;
+  const answeredAll = answers.length === QUIZ.length;
+  const correct = answers.filter(Boolean).length;
+  return `
+    <div class="eyebrow">Prueba de conocimientos</div>
+    <h2>Unidad 2 · Creencias pedagógicas y su influencia en la práctica</h2>
+    <p class="lead">Selecciona una opción por pregunta. Cada respuesta muestra retroalimentación
+    inmediata para reforzar tu aprendizaje.</p>
+    <div id="quiz-questions">
+      ${QUIZ.map((q,qi)=>renderQuizQuestion(qi,q,answers[qi])).join('')}
+    </div>
+    ${answeredAll ? `
+      <div class="final-summary">
+        <div class="level">Resultado de la prueba</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(correct/QUIZ.length*100)}%"></div></div>
+        <p class="small" style="margin-bottom:0; color:var(--ink-soft);">${correct} de ${QUIZ.length} respuestas correctas.</p>
+      </div>
+    ` : ''}
+    ${navRow(true, answeredAll)}
+  `;
+}
+function renderQuizQuestion(qIndex, q, answeredCorrect){
+  const answered = answeredCorrect !== undefined;
+  return `
+    <div class="question-block">
+      <div class="qtext">${qIndex+1}. ${q.prompt}</div>
+      ${q.options.map((opt,oi)=>{
+        let cls="option";
+        if(answered){ cls+=" locked"; if(opt.correct) cls+=" correct"; }
+        return `<label class="${cls}" onclick="${answered?'':`answerQuiz(${qIndex},${oi})`}">
+          <input type="radio" name="q-quiz-${qIndex}" ${answered?'disabled':''}>
+          <span class="otext">${opt.text}</span>
+        </label>`;
+      }).join('')}
+      <div class="feedback-box ${answered?(answeredCorrect?'correct show':'incorrect show'):''}">
+        ${answered? quizFeedbackHtml(qIndex, answeredCorrect):''}
+      </div>
+    </div>
+  `;
+}
+function quizFeedbackHtml(qIndex, wasCorrect){
+  const q = QUIZ[qIndex];
+  const chosen = window.__lastQuizChoice[qIndex];
+  const opt = chosen!==undefined ? q.options[chosen] : q.options.find(o=>o.correct);
+  return `<span class="verdict">${wasCorrect?"Correcto":"No del todo"}</span>${opt.feedback}`;
+}
+function answerQuiz(qIndex, optIndex){
+  const q = QUIZ[qIndex]; const opt = q.options[optIndex];
+  window.__lastQuizChoice[qIndex]=optIndex;
+  state.quizAnswers[qIndex] = !!opt.correct;
+  render();
+  const el = document.getElementById('quiz-questions'); if(el) el.scrollIntoView({behavior:"instant",block:"start"});
+}
+
+/* ---------- Pausa ---------- */
+function renderPausa(){
+  const cfg = PAUSAS.pausa1;
+  return `
+    <div class="eyebrow">Pausa consciente</div>
+    <h2>${cfg.title}</h2>
+    <p class="lead">${cfg.lead}</p>
+    <div class="breathing-wrap">
+      <div class="breathing-circle"></div>
+      <p class="breathing-hint">Inhala 4 segundos · sostén 4 segundos · exhala 6 segundos</p>
+    </div>
+    <div class="card"><span class="tag">Por qué esta pausa</span><p class="small">${cfg.why}</p></div>
+    ${navRow(true,true)}
+  `;
+}
+
+/* ---------- Acción reflexiva: Cartografías de la incertidumbre ---------- */
+async function startRecordingReflexion(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    audioChunks=[];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e=>audioChunks.push(e.data);
+    mediaRecorder.onstop = function(){
+      const blob = new Blob(audioChunks, {type:'audio/webm'});
+      state.reflexion.audioUrl = URL.createObjectURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+      render();
+    };
+    mediaRecorder.start();
+    state.reflexion.recording = true;
+    state.reflexion.recordError = false;
+    render();
+  }catch(err){ state.reflexion.recordError = true; render(); }
+}
+function stopRecordingReflexion(){
+  if(mediaRecorder && mediaRecorder.state==='recording'){ mediaRecorder.stop(); }
+  state.reflexion.recording = false;
+}
+function resetRecordingReflexion(){ state.reflexion.audioUrl=null; state.reflexion.recordError=false; render(); }
+
+function renderReflexion(){
+  const r = state.reflexion;
+  return `
+    <div class="eyebrow">Actividad integradora</div>
+    <h2>Acción reflexiva · «Cartografías de la incertidumbre»</h2>
+    <div class="card">
+      <span class="tag">Sobre esta actividad</span>
+      <p class="small">Cartografiar la incertidumbre es dibujar el mapa de lo que todavía no tiene
+      forma clara: las ideas con las que llegaste, lo que te desestabilizó al observar un aula real,
+      y cómo eso se instaló en tu cuerpo y tus emociones. No hay respuestas correctas; hay honestidad
+      con lo que estás viviendo.</p>
+      <button class="audio-btn" id="audio-reflexion" onclick="speakReflexionPrompts()">🔊 Escuchar las tres preguntas</button>
+    </div>
+
+    <label class="field-label" style="margin-top:0;">1. ¿Qué ideas sobre la enseñanza tenías al comenzar el Prácticum Docente?</label>
+    <textarea class="field-input" rows="3" oninput="state.reflexion.q1=this.value">${escapeHtml(r.q1)}</textarea>
+
+    <label class="field-label">2. ¿Qué aspectos de lo observado te han generado conflicto, inquietud o desafío al enfrentarte al centro educativo y/o aula?</label>
+    <textarea class="field-input" rows="3" oninput="state.reflexion.q2=this.value">${escapeHtml(r.q2)}</textarea>
+
+    <label class="field-label">3. ¿Cómo lo experimentado en el centro educativo y/o aula ha impactado en tus emociones?</label>
+    <textarea class="field-input" rows="3" oninput="state.reflexion.q3=this.value">${escapeHtml(r.q3)}</textarea>
+
+    <div class="card" style="margin-top:14px;">
+      <span class="tag">Opcional</span>
+      <p class="small" style="margin-bottom:8px;">Si lo prefieres, puedes grabar tu respuesta en audio
+      en vez de —o además de— escribirla.</p>
+      <div class="record-row">
+        ${(!r.recording && !r.audioUrl) ? `<button class="btn ghost small" onclick="startRecordingReflexion()">🎙 Grabar reflexión</button>` : ''}
+        ${r.recording ? `<button class="btn ghost small" onclick="stopRecordingReflexion()">⏹ Detener grabación</button>` : ''}
+        ${r.audioUrl ? `<audio controls src="${r.audioUrl}"></audio><button class="btn ghost small" onclick="resetRecordingReflexion()">Grabar de nuevo</button>` : ''}
+      </div>
+      ${r.recordError ? `<p class="small" style="color:var(--error); margin-top:8px;">No fue posible acceder al micrófono en este entorno. Usa el campo de texto.</p>` : ''}
+    </div>
+    ${navRow(true,true)}
+  `;
+}
+
+/* ---------- Bitácora de Transformación Pedagógica ---------- */
+function updateBelief(i,val){ state.bitacora.beliefs[i]=val; }
+function addMatrixRow(){ state.bitacora.matrix.push({belief:"", tension:""}); render(); }
+function removeMatrixRow(i){ state.bitacora.matrix.splice(i,1); if(state.bitacora.matrix.length===0){ state.bitacora.matrix.push({belief:"",tension:""}); } render(); }
+function updateMatrix(i,field,val){ state.bitacora.matrix[i][field]=val; }
+function toggleplenaria(){ state.bitacora.plenariaDone = !state.bitacora.plenariaDone; render(); }
+
+function renderBitacora(){
+  const b = state.bitacora; const s = state.student;
+  return `
+    <div class="eyebrow">Actividad de aprendizaje</div>
+    <h2>Bitácora de Transformación Pedagógica</h2>
+
+    <table class="data-table info-table">
+      <tr><th style="width:30%;">Nombre del estudiante</th><td>${escapeHtml(s.name)||'—'}</td></tr>
+      <tr><th>No. de registro</th><td>${escapeHtml(s.registro)||'—'}</td></tr>
+      <tr><th>Carrera</th><td>${escapeHtml(s.carrera)||'—'}</td></tr>
+    </table>
+
+    <div class="card">
+      <span class="tag">Propósito</span>
+      <p class="small">Que el futuro docente reconozca sus creencias sobre la enseñanza,
+      identificando las tensiones que surgen al contrastarlas con la realidad educativa, para asumir
+      progresivamente su transformación a lo largo de su proceso de formación.</p>
+      <p class="small" style="margin-bottom:0;"><strong>Instrucciones:</strong> responde
+      individualmente, considerando la autobiografía redactada en el apartado «Mi autorretrato
+      profesional inicial» de la Ficha de Trabajo Reflexiva de la Unidad 1.</p>
+    </div>
+
+    <label class="field-label" style="margin-top:0;">1. Escribe una reflexión respondiendo: «¿Qué significa para mí "ser un buen docente" y qué supuestos sobre la enseñanza guían esa idea?»</label>
+    <textarea class="field-input" rows="4" oninput="state.bitacora.item1=this.value">${escapeHtml(b.item1)}</textarea>
+
+    <label class="field-label">2. Identifica tres aspectos declarados en tu reflexión (creencias implícitas) sobre el aprendizaje, la enseñanza o el rol del docente. Ejemplo: «El docente debe controlar la disciplina en el aula».</label>
+    ${[0,1,2].map(i=>`
+      <input class="field-input line" type="text" placeholder="${['a.','b.','c.'][i]} Escribe una creencia implícita"
+        value="${escapeHtml(b.beliefs[i])}" oninput="updateBelief(${i}, this.value)">
+    `).join('')}
+
+    <label class="field-label">3. Completa la matriz: en la columna izquierda escribe la creencia identificada; en la derecha, la tensión o conflicto que genera lo que crees frente a lo que ocurre en la realidad del centro educativo.</label>
+    <div class="matrix-row" style="font-weight:600; font-size:12.5px; color:var(--navy-800);">
+      <div>Creencia personal inicial</div><div>Tensión o conflicto con la realidad escolar</div><div></div>
+    </div>
+    ${b.matrix.map((row,i)=>`
+      <div class="matrix-row">
+        <textarea class="field-input" rows="2" placeholder="Ej. Un buen docente siempre aplica métodos innovadores." oninput="updateMatrix(${i},'belief',this.value)">${escapeHtml(row.belief)}</textarea>
+        <textarea class="field-input" rows="2" placeholder="Ej. Falta de tiempo debido a muchas actividades recreativas." oninput="updateMatrix(${i},'tension',this.value)">${escapeHtml(row.tension)}</textarea>
+        <button class="matrix-remove" onclick="removeMatrixRow(${i})">Quitar</button>
+      </div>
+    `).join('')}
+    <button class="btn ghost small" onclick="addMatrixRow()">+ Agregar fila</button>
+
+    <label class="field-label" style="margin-top:20px;">4. A partir de la matriz anterior, selecciona una creencia personal inicial que consideres necesario trabajar, y declara un compromiso de modificación progresiva:</label>
+    <input class="field-input line" type="text" placeholder="Creencia seleccionada para trabajar" value="${escapeHtml(b.targetBelief)}" oninput="state.bitacora.targetBelief=this.value">
+    <label class="field-label">4.1 Durante la formación en la carrera: una acción concreta para cuestionar o enriquecer esa creencia mediante la teoría aprendida y las reflexiones realizadas.</label>
+    <textarea class="field-input" rows="2" oninput="state.bitacora.plan1=this.value">${escapeHtml(b.plan1)}</textarea>
+    <label class="field-label">4.2 Durante el Prácticum docente: una estrategia para gestionar dicha creencia sin desmotivarte por las condiciones del medio escolar.</label>
+    <textarea class="field-input" rows="2" oninput="state.bitacora.plan2=this.value">${escapeHtml(b.plan2)}</textarea>
+
+    <div class="card" style="margin-top:16px;">
+      <span class="tag">5. Plenaria</span>
+      <p class="small">Cada estudiante expone su creencia a transformar, identificando el valor del
+      cambio consciente en la construcción de su identidad profesional docente (IPD).</p>
+      <label class="chip ${b.plenariaDone?'checked':''}" style="display:inline-flex;">
+        <input type="checkbox" ${b.plenariaDone?'checked':''} onchange="toggleplenaria()"> Ya realicé mi presentación en plenaria
+      </label>
+    </div>
+
+    ${renderRubric()}
+
+    ${navRow(true,true)}
+  `;
+}
+
+function renderRubric(){
+  const criterios = [
+    {key:"ident", name:"Identificación de Creencias",
+     inicial:"Identifica supuestos pedagógicos de forma vaga o genérica, sin reconocer su origen implícito.",
+     intermedio:"Reconoce creencias sobre la enseñanza y distingue cómo estas influyen en su concepción del rol docente.",
+     avanzado:"Analiza críticamente constructos tácitos derivados de su historia escolar y de sus teorías personales."},
+    {key:"tension", name:"Análisis de Tensiones Contextuales",
+     inicial:"Describe la realidad escolar únicamente como una barrera externa inflexible.",
+     intermedio:"Contrasta sus creencias iniciales con exigencias reales del aula (currículo, diversidad, normas).",
+     avanzado:"Articula las tensiones entre sus convicciones, el currículo oculto y las presiones institucionales."},
+    {key:"compromiso", name:"Compromiso de Modificación Progresiva",
+     inicial:"Propone metas abstractas que dependen en su totalidad de factores externos para concretarse.",
+     intermedio:"Traza acciones viables a corto y mediano plazo para flexibilizar o evolucionar sus creencias.",
+     avanzado:"Diseña una estrategia autónoma impulsada por su motivación intrínseca para liderar su propia IPD."}
+  ];
+  return `
+    <div class="card">
+      <span class="tag">Criterios de evaluación · Autoevaluación</span>
+      <p class="small">Antes de entregar, ubica honestamente en qué nivel sientes que está tu
+      Bitácora para cada criterio. No cambia tu calificación; es un ejercicio de metacognición.</p>
+      <table class="data-table">
+        <tr><th>Criterio</th><th>Nivel Inicial</th><th>Nivel Intermedio</th><th>Nivel Avanzado</th></tr>
+        ${criterios.map(c=>`
+          <tr>
+            <td><strong>${c.name}</strong>
+              <select class="rubric-mini" onchange="state.bitacora.rubric['${c.key}']=this.value">
+                <option value="" ${state.bitacora.rubric[c.key]===''?'selected':''}>Autoevaluarme…</option>
+                <option value="Inicial" ${state.bitacora.rubric[c.key]==='Inicial'?'selected':''}>Nivel Inicial</option>
+                <option value="Intermedio" ${state.bitacora.rubric[c.key]==='Intermedio'?'selected':''}>Nivel Intermedio</option>
+                <option value="Avanzado" ${state.bitacora.rubric[c.key]==='Avanzado'?'selected':''}>Nivel Avanzado</option>
+              </select>
+            </td>
+            <td>${c.inicial}</td>
+            <td>${c.intermedio}</td>
+            <td>${c.avanzado}</td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+  `;
+}
+
+/* ---------- Cierre ---------- */
+function buildTextSummary(){
+  const s = state.student, r = state.reflexion, b = state.bitacora;
+  const correct = state.quizAnswers.filter(Boolean).length;
+  const lines = [];
+  lines.push('RESUMEN DEL SIMULADOR — UNIDAD 2: CREENCIAS PEDAGÓGICAS Y SU INFLUENCIA EN LA PRÁCTICA');
+  lines.push('Universidad Pedagógica Nacional Francisco Morazán · Practicum I');
+  lines.push('Estudiante: '+(s.name||'—')+' | No. de registro: '+(s.registro||'—')+' | Carrera: '+(s.carrera||'—'));
+  lines.push('');
+  lines.push('--- Prueba de conocimientos ---');
+  lines.push(correct+'/'+QUIZ.length+' respuestas correctas');
+  lines.push('');
+  lines.push('--- Acción reflexiva: Cartografías de la incertidumbre ---');
+  lines.push('1. Ideas iniciales sobre la enseñanza: '+(r.q1||'—'));
+  lines.push('2. Aspectos que generaron conflicto o desafío: '+(r.q2||'—'));
+  lines.push('3. Impacto emocional de lo experimentado: '+(r.q3||'—'));
+  lines.push('');
+  lines.push('--- Bitácora de Transformación Pedagógica ---');
+  lines.push('¿Qué significa ser un buen docente?: '+(b.item1||'—'));
+  lines.push('Creencias implícitas: '+b.beliefs.filter(Boolean).join(' | ')||'—');
+  lines.push('Matriz creencia / tensión:');
+  b.matrix.forEach((row,i)=>{ lines.push('  '+(i+1)+'. Creencia: '+(row.belief||'—')+' — Tensión: '+(row.tension||'—')); });
+  lines.push('Creencia a transformar: '+(b.targetBelief||'—'));
+  lines.push('Acción durante la formación: '+(b.plan1||'—'));
+  lines.push('Estrategia durante el Prácticum: '+(b.plan2||'—'));
+  lines.push('Plenaria realizada: '+(b.plenariaDone?'Sí':'Pendiente'));
+  lines.push('Autoevaluación con rúbrica — Identificación: '+(b.rubric.ident||'—')+' | Tensiones: '+(b.rubric.tension||'—')+' | Compromiso: '+(b.rubric.compromiso||'—'));
+  lines.push('');
+  lines.push('--- Para compartir con un par o con el profesor de Prácticum ---');
+  lines.push(state.peer||'—');
+  return lines.join('\n');
+}
+function downloadTextSummary(){
+  const blob = new Blob([buildTextSummary()], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='resumen_unidad2_creencias_pedagogicas.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight){
+  const words = text.split(' '); let line='';
+  for(let n=0;n<words.length;n++){
+    const test=line+words[n]+' ';
+    if(ctx.measureText(test).width>maxWidth && n>0){ ctx.fillText(line,x,y); line=words[n]+' '; y+=lineHeight; }
+    else line=test;
+  }
+  ctx.fillText(line,x,y); return y+lineHeight;
+}
+function downloadVisualSummary(){
+  const canvas=document.createElement('canvas'); canvas.width=800; canvas.height=520;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#f7f4ec'; ctx.fillRect(0,0,800,520);
+  ctx.fillStyle='#1c2b45'; ctx.fillRect(0,0,800,92);
+  ctx.fillStyle='#b08833'; ctx.fillRect(0,88,800,4);
+  ctx.fillStyle='#f4eedd'; ctx.font="bold 21px Georgia";
+  ctx.fillText('Creencias Pedagógicas y su Influencia en la Práctica', 30, 40);
+  ctx.font="13px Arial"; ctx.fillStyle='#cfc7ae';
+  const nameLine = 'UPNFM · Practicum I' + (state.student.name? ' · '+state.student.name : '');
+  ctx.fillText(nameLine, 30, 65);
+
+  let y=130;
+  const correct = state.quizAnswers.filter(Boolean).length;
+  ctx.fillStyle='#24221d'; ctx.font="16px Arial";
+  ctx.fillText('Prueba de conocimientos: '+correct+'/'+QUIZ.length+' correctas', 30, y); y+=36;
+  ctx.fillText('Bitácora — plenaria: '+(state.bitacora.plenariaDone?'realizada':'pendiente'), 30, y); y+=36;
+
+  ctx.fillStyle='#b08833'; ctx.fillRect(30,y,740,3); y+=32;
+  ctx.fillStyle='#5c5648'; ctx.font="italic 14px Arial";
+  y = wrapCanvasText(ctx, 'Las creencias más enraizadas rara vez se explicitan: nombrarlas ya es transformarlas.', 30, y, 740, 20);
+  y+=8;
+  if(state.bitacora.targetBelief){
+    ctx.fillStyle='#24221d'; ctx.font="13px Arial";
+    y = wrapCanvasText(ctx, 'Creencia en transformación: '+state.bitacora.targetBelief.slice(0,200), 30, y, 740, 18);
+  }
+  const link=document.createElement('a'); link.download='tarjeta_resumen_creencias_pedagogicas.png'; link.href=canvas.toDataURL('image/png'); link.click();
+}
+
+function renderCierre(){
+  const correct = state.quizAnswers.filter(Boolean).length;
+  return `
+    <div class="eyebrow">Cierre del simulador</div>
+    <h2>Tu recorrido por la Unidad 2, en un solo lugar</h2>
+    <p class="lead">Descarga un resumen para tu Portafolio y prepara lo que compartirás con un
+    compañero o con tu profesor de Prácticum.</p>
+    <div class="result-grid">
+      <div class="result-tile ok"><div class="n">${correct}/${QUIZ.length}</div><div class="lbl">Prueba de conocimientos</div></div>
+      <div class="result-tile"><div class="n">${state.bitacora.plenariaDone?'Sí':'—'}</div><div class="lbl">Plenaria realizada</div></div>
+    </div>
+    <div class="card">
+      <span class="tag">Para compartir con un par</span>
+      <label class="field-label">Escribe brevemente lo que te gustaría compartir sobre la creencia que estás transformando:</label>
+      <textarea class="field-input" rows="3" oninput="state.peer=this.value">${escapeHtml(state.peer)}</textarea>
+    </div>
+    <div class="btn-row" style="justify-content:flex-start; gap:12px; border-top:none; padding-top:0;">
+      <button class="btn" onclick="downloadTextSummary()">Descargar resumen (texto)</button>
+      <button class="btn ghost" onclick="downloadVisualSummary()">Descargar tarjeta visual (PNG)</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" onclick="back()">← Atrás</button>
+      <span></span>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
